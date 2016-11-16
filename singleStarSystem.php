@@ -156,11 +156,12 @@ if ($numPlanets > 0) {
 					echo "<ul><li>".genQuirk("sentient")."</li></ul>";
 				} else {
 					$num = 1;
-					while ($num <= $planetBiosphere[1]) {
-						echo "<ul><li>Sample Lifeform Classification: ".genClassification($word)."<ul><li>Quirks: ".genQuirk($word);
-						echo "</li></ul>";
+					while ($num <= $moonBiosphere[1]) {
+						echo "<ul><li>Sample Lifeform: ".genClassification($word)."<ul><li>Quirks: ".genQuirk($word);
+						echo "</li></ul></li></ul>";
 						$num++;
 					}
+					echo "</li></ul>";
 				}
 				echo "</li></ul></li></ul>";
 			}
@@ -318,8 +319,9 @@ if ($numPlanets > 0) {
 								echo "</li></ul></li></ul>";
 								$num++;
 							}
+							echo "</li></ul>";
 						}
-						echo "</li></ul></li></ul>";
+						echo "</li></ul>";
 					}
 					echo "</li>";
 				}
