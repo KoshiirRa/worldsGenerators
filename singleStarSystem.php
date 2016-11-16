@@ -243,7 +243,7 @@ if ($numPlanets > 0) {
 				//MOON GRAVITY
 				//$gravity[0] key: 1 = microgravity, 2 = very low gravity, 3 = low gravity, 4 = standard gravity, 5 = high gravity, 6 = very high gravity, 7 = extreme gravity
 				if ($moonSize[0] <= 7) {
-					$moonGravity = genGravity($size[0],$moonType, TRUE, $gravity[0]);
+					$moonGravity = genGravity($moonSize[0],$moonType, TRUE, $gravity[0]);
 				} else {
 					$moonGravity[0] = 7;
 					$moonGravity[1] = "Extreme Gas Giant Gravity (way more than 4.0 G)";

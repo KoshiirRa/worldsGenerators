@@ -580,7 +580,7 @@ function genGravity ($size, $type, $moon = FALSE, $planetGrav = FALSE) {
 			}
 			break;
 	}
-	var_dump($returnArray);
+	//var_dump($returnArray);
 	if ($planetGrav != FALSE) {
 		$loop = TRUE;
 		while ($loop == TRUE) {
