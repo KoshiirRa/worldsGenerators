@@ -314,8 +314,8 @@ if ($numPlanets > 0) {
 						} else {
 							$num = 1;
 							while ($num <= $moonBiosphere[1]) {
-								echo "<ul><li>Sample Lifeform Classification: ".genClassification($word)."<ul><li>Quirks: ".genQuirk($word);
-								echo "</li></ul>";
+								echo "<ul><li>Sample Lifeform: ".genClassification($word)."<ul><li>Quirks: ".genQuirk($word);
+								echo "</li></ul></li></ul>";
 								$num++;
 							}
 						}
