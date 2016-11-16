@@ -1853,4 +1853,298 @@ a good find, but not terribly distinct or otherwise noteworthy.";
 	}
 	return $returnText;
 }
+
+function generateArtifact($template = FALSE, $technology = FALSE) {
+	//determine template
+	$returnArray = array();
+	$returnArray["other notes"] = array();
+	$returnArray["secondary skills"] = array();
+	$returnArray["attributes"] = array();
+	if ($template != FALSE) {
+		if ($template == "armor") {
+			$roll = 1;
+		} elseif ($template == "weapon") {
+			$roll = 5;
+		} else {
+			$roll = 3;
+		}
+	} else {
+		$roll = mt_rand(1,6);
+	}
+	if ($roll == "1" || $roll == 2) {
+		//Armor
+		$returnArray["template"] = "Armor";
+		$returnArray["weight"] = 7;
+		$returnArray["DR"] = 5;
+		array_push($returnArray["other notes"], "Every use of the damage reduction counts as a use of the artifact.");
+		
+	} elseif ($roll == 3 || $roll == 4) {
+		//Gear
+		$returnArray["template"] = "Gear";
+		$returnArray["weight"] = 5;
+		$returnArray["primary skill boost"] = 10;
+		$skills = array_map('str_getcsv', file('artifactValidSkills.csv'));
+		$numSkills = count($skills);
+		$randSkill = $skills[(mt_rand(1,$numSkills)-1)];
+		$returnArray["primary skill"] = $randSkill;
+		array_push($returnArray["other notes"],"Every use of the skill boost counts as a use of the artifact.");
+	} else {
+		//Weapon
+		//determine type of weapon
+		$roll2 = mt_rand(1,100);
+		if ($roll2 <= 50) {
+			//melee
+			$returnArray["template"] = "Melee Weapon";
+			$returnArray["weaponType"] = "melee";
+			$returnArray["weight"] = 3;
+			$returnArray["damage"] = "1d8";
+			$roll3 = mt_rand(1,3);
+			if ($roll3 == "1") {
+				$returnArray["damage type"] = "Bludgeoning";
+			} elseif ($roll3 == 2) {
+				$returnArray["damage type"] = "Piercing";
+			} else {
+				$returnArray["damage type"] = "Slashing";
+			}
+		} elseif ($roll2 >= 51 && $roll2 <= 80) {
+			//ranged projectile
+			$returnArray["template"] = "Ranged Weapon";
+			$returnArray["weaponType"] = "ranged";
+			$returnArray["weight"] = 1;
+			$returnArray["damage"] = "2d6";
+			$returnArray["range"] = "Pistol";
+			$roll3 = mt_rand(1,3);
+			if ($roll3 == "1") {
+				$returnArray["damage type"] = "Bludgeoning";
+			} elseif ($roll3 == 2) {
+				$returnArray["damage type"] = "Piercing";
+			} else {
+				$returnArray["damage type"] = "Slashing";
+			}
+		} else {
+			//ranegd energy
+			$returnArray["template"] = "Ranged Weapon";
+			$returnArray["weaponType"] = "ranged";
+			$returnArray["damage type"] = "Energy";
+			$returnArray["weight"] = 1;
+			$returnArray["damage"] = "3d4";
+			$returnArray["range"] = "Pistol";
+		}	
+	}
+	$attributeCount = 0;
+	//determine technology
+	switch ($technology) {
+		case FALSE:
+			$techRoll = mt_rand(1,110);
+			break;
+		case "crystal":
+			$techRoll = 10;
+			break;
+		case "chemical":
+			$techRoll = 100;
+			break;
+		case "electronic":
+			$techRoll = 20;
+			break;
+		case "life":
+			$techRoll = 40;
+			break;
+		case "mechanical":
+			$techRoll = 50;
+			break;
+		case "nanotechnology":
+			$techRoll = 70;
+			break;
+		case "organic";
+			$techRoll = 85;
+			break;
+	}
+	if ($techRoll <= 15) {
+		//crystal
+		$returnArray["technology"] = "Crystal";
+		array_push($returnArray["attributes"], "<em>Inherent Attribute – Innocuous - </em>Crystal-based technology is just so utterly weird to most people that they have a hard time identifying an artifact as anything other than a decorative hunk of rock.  Unless someone examining the artifact succeeds on a DC 30 Knowledge [Physical Sciences] check or has seen the artifact in use, they will assume that it is just a piece of jewelry, mundane rock, or other harmless thing.  Consequently, all Armor artifacts based on crystal technology must have the Concealable attribute.");
+		if ($returnArray["template"] == "Armor") {
+			$attributeCount--;
+			array_push($returnArray["attributes"], "<em>Concealable – </em>the item creates the armor rather than providing armor itself.");
+		}
+		$attributeCount+=mt_rand(1,6);
+		$returnArray["uses"] = "1 Use, then ".mt_rand(1,4)." round recharge time before it can be used again.";
+	} elseif ($techRoll >= 16 && $techRoll <= 30) {
+		//electronic
+		$returnArray["technology"] = "Electronic";
+		array_push($returnArray["attributes"], "<em>Inherent Attribute – Electrically Powered - </em>Electronic artifacts are vulnerable to ion damage, like most technology.  However, this vulnerability comes with a boon.  Unlike artifacts which require in-depth methods of recharging, electronic artifacts can be recharged with a basic power pack as a move action.");
+		$attributeCount+=mt_rand(1,4);
+		$returnArray["uses"] = mt_rand(1,6)." Uses, recharge either via outside charger or by using a power pack as a move action.";
+	} elseif ($techRoll >= 31 && $techRoll <= 45) {
+		//life
+		$returnArray["technology"] = "Life";
+		array_push($returnArray["attributes"], "<em>Inherent Attribute – Alacrity Enhancer - </em>You can sacrifice 5 hit points to gain an additional move action on your turn.  Each time you use this attribute beyond the first without getting a full night’s rest, you move 1 persistent step down the condition track.");
+		$attributeCount+=5;
+		$returnArray["uses"] = "Infinite Uses, but each use drains 1 hit point from the user.";
+	} elseif ($techRoll >= 46 && $techRoll <= 64) {
+		//mechanical
+		$returnArray["technology"] = "Mechanical";
+		array_push($returnArray["attributes"], "<em>Inherent Attribute – Change Form - </em>Mechanical artifacts lack the flexibility of more advanced artifacts such as nanotech and organic ones, but they retain a fair amount of flexibility themselves.  As a use of the artifact you can change it between Armor, Gear, and a Weapon (the type of the weapon is determined upon artifact creation).  Attributes are shared across these three forms, and attributes that cannot be used for a specific form are disabled while the artifact is in that form.");
+		if ($returnArray["template"] == "Melee Weapon" || $returnArray["template"] == "Ranged Weapon") {
+			//Gear Form
+			$returnArray["primary skill boost"] = 10;
+			$skills = array_map('str_getcsv', file('artifactValidSkills.csv'));
+			$numSkills = count($skills);
+			$randSkill = $skills[(mt_rand(1,$numSkills)-1)];
+			$returnArray["primary skill"] = $randSkill;
+			array_push($returnArray["other notes"],"Every use of the skill boost counts as a use of the artifact.");
+			//Armor Form
+			$returnArray["DR"] = 5;
+			array_push($returnArray["other notes"], "Every use of the damage reduction counts as a use of the artifact.");
+		} elseif ($returnArray["template"] == "Armor") {
+			//Gear Form
+			$returnArray["primary skill boost"] = 10;
+			$skills = array_map('str_getcsv', file('artifactValidSkills.csv'));
+			$numSkills = count($skills);
+			$randSkill = $skills[(mt_rand(1,$numSkills)-1)];
+			$returnArray["primary skill"] = $randSkill;
+			array_push($returnArray["other notes"],"Every use of the skill boost counts as a use of the artifact.");
+			//Weapon
+			//determine type of weapon
+			$roll2 = mt_rand(1,100);
+			if ($roll2 <= 50) {
+				//melee
+				$returnArray["damage"] = "1d8";
+				$returnArray["weaponType"] = "melee";
+				$roll3 = mt_rand(1,3);
+				if ($roll3 == "1") {
+					$returnArray["damage type"] = "Bludgeoning";
+				} elseif ($roll3 == 2) {
+					$returnArray["damage type"] = "Piercing";
+				} else {
+					$returnArray["damage type"] = "Slashing";
+				}
+			} elseif ($roll2 >= 51 && $roll2 <= 80) {
+				//ranged projectile
+				$returnArray["damage"] = "2d6";
+				$returnArray["range"] = "Pistol";
+				$returnArray["weaponType"] = "ranged";
+				$roll3 = mt_rand(1,3);
+				if ($roll3 == "1") {
+					$returnArray["damage type"] = "Bludgeoning";
+				} elseif ($roll3 == 2) {
+					$returnArray["damage type"] = "Piercing";
+				} else {
+					$returnArray["damage type"] = "Slashing";
+				}
+			} else {
+				//ranegd energy
+				$returnArray["damage type"] = "Energy";
+				$returnArray["weaponType"] = "ranged";
+				$returnArray["damage"] = "3d4";
+				$returnArray["range"] = "Pistol";
+			}	
+		} else {
+			//Armor Form
+			$returnArray["DR"] = 5;
+			array_push($returnArray["other notes"], "Every use of the damage reduction counts as a use of the artifact.");
+			//Weapon
+			//determine type of weapon
+			$roll2 = mt_rand(1,100);
+			if ($roll2 <= 50) {
+				//melee
+				$returnArray["damage"] = "1d8";
+				$returnArray["weaponType"] = "melee";
+				if ($roll3 == "1") {
+					$returnArray["damage type"] = "Bludgeoning";
+				} elseif ($roll3 == 2) {
+					$returnArray["damage type"] = "Piercing";
+				} else {
+					$returnArray["damage type"] = "Slashing";
+				}
+			} elseif ($roll2 >= 51 && $roll2 <= 80) {
+				//ranged projectile
+				$returnArray["damage"] = "2d6";
+				$returnArray["range"] = "Pistol";
+				$returnArray["weaponType"] = "ranged";
+				$roll3 = mt_rand(1,3);
+				if ($roll3 == "1") {
+					$returnArray["damage type"] = "Bludgeoning";
+				} elseif ($roll3 == 2) {
+					$returnArray["damage type"] = "Piercing";
+				} else {
+					$returnArray["damage type"] = "Slashing";
+				}
+			} else {
+				//ranegd energy
+				$returnArray["damage type"] = "Energy";
+				$returnArray["weaponType"] = "ranged";
+				$returnArray["damage"] = "3d4";
+				$returnArray["range"] = "Pistol";
+			}	
+		}
+		$attributeCount+=mt_rand(1,4);
+		$returnArray["uses"] = mt_rand(1,6)." Uses, Recharge via cranking or a similar action for a number of full rounds equal to the maximum uses.";
+	} elseif ($techRoll >= 65 && $techRoll <= 79) {
+		//nanotechnology
+		$returnArray["technology"] = "Nanotechnology";
+		array_push($returnArray["attributes"], "<em>Inherent Attribute – Nanoflexibility - </em>Nanotech artifacts are inherently flexible due to the wide range of things that can be done with nanites.  A nanotech artifact is treated as having a nanite ability pool with one randomly-determined ability in it. This ability can be used once per encounter as normal. This ability can be changed by making a DC 30 Knowledge [Technology] or Nanite Control check.  If you do not have Nanite Control as a trained skill, you activate this nanite ability using your Knowledge [Technology] skill instead.");
+		$attributeCount+=mt_rand(1,6);
+		$returnArray["uses"] = mt_rand(1,6)." Uses, Recharge by feeding it half its weight in raw materials over the course of several hours.";
+	} elseif ($techRoll >= 80 && $techRoll <= 90) {
+		//organic
+		$returnArray["technology"] = "Organic";
+		array_push($returnArray["attributes"], "<em>Inherent Attribute – Self-Aware - </em>Organic artifacts are self-aware, conscious, and sentient.  They’re not exactly intelligent on the level of what passes for a sentient species, rather they’re roughly like sentient animals, or young children.  An organic artifact is treated as a 1st-level nonheroic creature with hit points appropriate for an object of its size.  Unless it is motile, it has no Strength or Dexterity score.  Its Constitution, Intelligence, Wisdom, and Charisma scores are equal to 6 plus the number of attributes the artifact has.  It gains the usual feats and trained skills.");
+		if (mt_rand(1,100) <= 5) {
+			array_push($returnArray["attributes"], "<em>Special Inherent Attribute – Adaptive - </em>An adaptive organic artifact responds to the wishes of its user, altering its attributes to suit the user’s needs.  By making a DC 35 Knowledge [Life Sciences] check, an owner of an adaptive organic artifact can change one attribute of the artifact to another.  This takes 4 8-hour work periods and consumes a number of medpacs equal to the attributes that the artifact has.");
+		}
+		$attributeCount+=(mt_rand(1,4)+mt_rand(1,4)+1);
+		$returnArray["uses"] = "Infinite Uses";
+	} else {
+		//chemical
+		$returnArray["technology"] = "Chemical";
+		array_push($returnArray["attributes"], "<em>Inherent Attribute – Unstable - </em>\"Any sufficiently advanced technology is indistinguishable from a big gun,\" goes the saying.  Chemically-based artifacts are inherently unstable if handled in the wrong way (or the right way).  Any character that has determined at least the technology type of a chemical artifact can trigger the artifact to destructively overload.  This explosively destroys the artifact two rounds after it has been overloaded, dealing 10d6 damage per use the artifact had left, functioning as an explosive charge that can be set with the Mechanics skill or as a grenade (which can be thrown at standard Simple ranged weapon ranges).");
+		$attributeCount+=mt_rand(1,4);
+		$returnArray["uses"] = mt_rand(1,4)." Uses, No Recharge Possible";
+	}
+	//attribute generation
+	$generic = array_map('str_getcsv', file('genericArtifactAttributes.csv'));
+	if ($returnArray["technology"] == "Mechanical") {
+		$gear = array_map('str_getcsv', file('gearArtifactAttributes.csv'));
+		$armor = array_map('str_getcsv', file('armorArtifactAttributes.csv'));
+		if ($returnArray["weaponType"] == "ranged") {
+			$weapon = array_map('str_getcsv', file('meleeWeaponArtifactAttributes.csv'));
+		} else {
+			$weapon = array_map('str_getcsv', file('rangedWeaponArtifactAttributes.csv'));
+		}
+		$attributeArray = array_merge($generic, $gear, $armor, $weapon);
+	} else {
+		if ($returnArray["template"] == "Ranged Weapon") {
+			$weapon = array_map('str_getcsv', file('rangedWeaponArtifactAttributes.csv'));
+			$attributeArray = array_merge($generic, $weapon);
+		} elseif ($returnArray["template"] == "Melee Weapon") {
+			$weapon = array_map('str_getcsv', file('meleeWeaponArtifactAttributes.csv'));
+			$attributeArray = array_merge($generic, $weapon);
+		} elseif ($returnArray["template"] == "Armor") {
+			$armor = array_map('str_getcsv', file('armorArtifactAttributes.csv'));
+			$attributeArray = array_merge($generic, $armor);
+		} elseif ($returnArray["template"] == "Gear") {
+			$gear = array_map('str_getcsv', file('gearArtifactAttributes.csv'));
+			$attributeArray = array_merge($generic, $gear);
+		}
+	}
+	$attributePoolCount = count($attributeArray);
+	$attributeNum = 1;
+	echo "ATTRIBUTE POOL COUNT: ".$attributePoolCount."<br>ATTRIBUTE POOL: ".$attributeCount."<br>";
+	
+	while ($attributeNum <= $attributeCount) {
+		echo "ZING<br>";
+		$attributeNumber = mt_rand(1,$attributePoolCount);
+		echo $attributeNumber."<br>";
+		echo $attributeArray[($attributeNumber-1)][0];
+		if ($attributeArray[($attributeNumber-1)][0] == "modifier") {
+			echo "BAR<br>";
+		} elseif ($attributeArray[($attributeNumber-1)][0] == "attribute") {
+			echo "FOO<br>";
+			array_push($returnArray["attributes"], $attributeArray[($attributeNumber-1)][1]);
+		}
+		$attributeNum++;
+	}
+	return $returnArray;
+}
 ?>
