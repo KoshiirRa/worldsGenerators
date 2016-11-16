@@ -29,20 +29,19 @@ if ($numPlanets > 0) {
 	
 	foreach($planets as $zone) {
 		$count++;
-		echo "Planet ".$count;
-		echo "<ul>";
+		$stringHolder = "Planet ".$count."<ul>";
 		
 		//PLANET ZONE
 		//$zone key: 1 = hot zone, 2 = habitable zone, 3 = cold zone
 		switch($zone) {
 			case "1":
-				echo "<li>Hot Zone</li>";
+				$stringHolder.="<li>Hot Zone</li>";
 				break;
 			case "2":
-				echo "<li>Habitable Zone</li>";
+				$stringHolder.="<li>Habitable Zone</li>";
 				break;
 			case "3":
-				echo "<li>Cold Zone</li>";
+				$stringHolder.="<li>Cold Zone</li>";
 				break;
 		}
 		
@@ -51,20 +50,22 @@ if ($numPlanets > 0) {
 		$type = genPlanetType($zone);
 		switch($type) {
 			case "1":
-				echo "<li>Gas Giant</li>";
+				$stringHolder.="<li>Gas Giant</li>";
 				$gasGiants++;
 				break;
 			case "2":
-				echo "<li>Terrestrial Planet</li>";
+				$stringHolder.="<li>Terrestrial Planet</li>";
 				break;
 			case "3":
-				echo "<li>Asteroid Belt ".$count." <strong>(SEE BOTTOM OF PAGE FOR DETAILS ON BELT)</strong></li>";
-				array_push($asteroidBelts, $count);
+				$stringHolder = "Asteroid Belt ".(count($asteroidBelts)+1)."<ul><li>Asteroid Belt<strong> (SEE BOTTOM OF PAGE FOR DETAILS ON BELT)</strong></li>";
+				$numBelt = count($asteroidBelts)+1;
+				array_push($asteroidBelts, $numBelt);
 				$asteroids = TRUE;
 				break;
 			case "4":
-				echo "<li>Icy Planet</li>";
+				$stringHolder.="<li>Icy Planet</li>";
 		}
+		echo $stringHolder;
 		//abort the rest of the iteration if an asteroid belt
 		if ($type == "3") {
 			echo "</ul>";
