@@ -185,7 +185,9 @@ if ($numPlanets > 0) {
 		//CHECK FOR ALIEN ARTIFACTS
 		$roll = mt_rand(1,100);
 		if ($roll == 1) {
-			$stringHolder.="<li>Alien Artifacts Possible</li>";
+			$stringHolder.="<li>Alien Artifacts Present.  Sample Artifact Follows: <ul><li>";
+			$stringHolder.=generateArtifact();
+			$stringHolder.="</li></ul></li>";
 		}
 		
 		//MOON GENERATION (OH GODS WHY)
@@ -343,7 +345,9 @@ if ($numPlanets > 0) {
 				//CHECK FOR ALIEN ARTIFACTS
 				$roll = mt_rand(1,100);
 				if ($roll == 1) {
-					$stringHolder.="<li>Alien Artifacts Possible</li>";
+					$stringHolder.="<li>Alien Artifacts Present.  Sample Artifact Follows: ";
+					$stringHolder.=generateArtifact();
+					$stringHolder.="</li>";
 				}
 				$stringHolder.="</li></ul>";
 				$currentMoon++;

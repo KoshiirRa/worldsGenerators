@@ -6,11 +6,10 @@
 </head>
 
 <body>
-<pre>
 <?php
 require_once('classes.php');
-print_r(generateArtifact());
+echo generateArtifact();
+
 ?>
-</pre>
 </body>
 </html>

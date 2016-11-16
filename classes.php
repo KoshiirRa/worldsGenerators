@@ -1855,6 +1855,7 @@ a good find, but not terribly distinct or otherwise noteworthy.";
 }
 
 function loadTSV($file) {
+	//loads the specified file handler as a tab-separated value file and converts it/returns it as an array.
 	$rows = array_map('str_getcsv', $file, array_fill(0, count($file), "\t"));
 	return $rows;
 }
@@ -1865,6 +1866,9 @@ function generateArtifact($template = FALSE, $technology = FALSE) {
 	$returnArray["other notes"] = array();
 	$returnArray["secondary skills"] = array();
 	$returnArray["attributes"] = array();
+	$returnArray["autoshields"] = array();
+	$returnArray["hardness"] = 10;
+	$returnArray["hit points"] = 20;
 	if ($template != FALSE) {
 		if ($template == "armor") {
 			$roll = 1;
@@ -1891,11 +1895,12 @@ function generateArtifact($template = FALSE, $technology = FALSE) {
 		$skills = array_map('str_getcsv', file('data/artifactValidSkills.csv'));
 		$numSkills = count($skills);
 		$randSkill = $skills[(mt_rand(1,$numSkills)-1)];
-		$returnArray["primary skill"] = $randSkill;
+		$returnArray["primary skill"] = $randSkill[0];
 		array_push($returnArray["other notes"],"Every use of the skill boost counts as a use of the artifact.");
 	} else {
 		//Weapon
 		//determine type of weapon
+		array_push($returnArray["other notes"], "Every attack with the weapon counts as a use of the artifact.");
 		$roll2 = mt_rand(1,100);
 		if ($roll2 <= 50) {
 			//melee
@@ -1903,6 +1908,8 @@ function generateArtifact($template = FALSE, $technology = FALSE) {
 			$returnArray["weaponType"] = "melee";
 			$returnArray["weight"] = 3;
 			$returnArray["damage"] = "1d8";
+			$returnArray["attack"] = 0;
+			$returnArray["reach"] = 0;
 			$roll3 = mt_rand(1,3);
 			if ($roll3 == "1") {
 				$returnArray["damage type"] = "Bludgeoning";
@@ -1918,6 +1925,8 @@ function generateArtifact($template = FALSE, $technology = FALSE) {
 			$returnArray["weight"] = 1;
 			$returnArray["damage"] = "2d6";
 			$returnArray["range"] = "Pistol";
+			$returnArray["attack"] = 0;
+			$returnArray["aoe"] = 0;
 			$roll3 = mt_rand(1,3);
 			if ($roll3 == "1") {
 				$returnArray["damage type"] = "Bludgeoning";
@@ -1934,6 +1943,8 @@ function generateArtifact($template = FALSE, $technology = FALSE) {
 			$returnArray["weight"] = 1;
 			$returnArray["damage"] = "3d4";
 			$returnArray["range"] = "Pistol";
+			$returnArray["attack"] = 0;
+			$returnArray["aoe"] = 0;
 		}	
 	}
 	$attributeCount = 0;
@@ -1967,36 +1978,40 @@ function generateArtifact($template = FALSE, $technology = FALSE) {
 	if ($techRoll <= 15) {
 		//crystal
 		$returnArray["technology"] = "Crystal";
-		array_push($returnArray["attributes"], "<em>Inherent Attribute – Innocuous - </em>Crystal-based technology is just so utterly weird to most people that they have a hard time identifying an artifact as anything other than a decorative hunk of rock.  Unless someone examining the artifact succeeds on a DC 30 Knowledge [Physical Sciences] check or has seen the artifact in use, they will assume that it is just a piece of jewelry, mundane rock, or other harmless thing.  Consequently, all Armor artifacts based on crystal technology must have the Concealable attribute.");
+		$push = array("<em>Inherent Attribute – Innocuous - </em>Crystal-based technology is just so utterly weird to most people that they have a hard time identifying an artifact as anything other than a decorative hunk of rock.  Unless someone examining the artifact succeeds on a DC 30 Knowledge [Physical Sciences] check or has seen the artifact in use, they will assume that it is just a piece of jewelry, mundane rock, or other harmless thing.  Consequently, all Armor artifacts based on crystal technology must have the Concealable attribute.", "inherent");
+		array_push($returnArray["attributes"], $push);
 		if ($returnArray["template"] == "Armor") {
 			$attributeCount--;
-			array_push($returnArray["attributes"], "<em>Concealable – </em>the item creates the armor rather than providing armor itself.");
+			array_push($returnArray["attributes"], "<em>Concealable - </em>the item creates the armor rather than providing armor itself.");
 		}
 		$attributeCount+=mt_rand(1,6);
 		$returnArray["uses"] = "1 Use, then ".mt_rand(1,4)." round recharge time before it can be used again.";
 	} elseif ($techRoll >= 16 && $techRoll <= 30) {
 		//electronic
 		$returnArray["technology"] = "Electronic";
-		array_push($returnArray["attributes"], "<em>Inherent Attribute – Electrically Powered - </em>Electronic artifacts are vulnerable to ion damage, like most technology.  However, this vulnerability comes with a boon.  Unlike artifacts which require in-depth methods of recharging, electronic artifacts can be recharged with a basic power pack as a move action.");
+		$push = array("<em>Inherent Attribute – Electrically Powered - </em>Electronic artifacts are vulnerable to ion damage, like most technology.  However, this vulnerability comes with a boon.  Unlike artifacts which require in-depth methods of recharging, electronic artifacts can be recharged with a basic power pack as a move action.", "inherent");
+		array_push($returnArray["attributes"], $push);
 		$attributeCount+=mt_rand(1,4);
 		$returnArray["uses"] = mt_rand(1,6)." Uses, recharge either via outside charger or by using a power pack as a move action.";
 	} elseif ($techRoll >= 31 && $techRoll <= 45) {
 		//life
 		$returnArray["technology"] = "Life";
-		array_push($returnArray["attributes"], "<em>Inherent Attribute – Alacrity Enhancer - </em>You can sacrifice 5 hit points to gain an additional move action on your turn.  Each time you use this attribute beyond the first without getting a full night's rest, you move 1 persistent step down the condition track.");
+		$push = array("<em>Inherent Attribute – Alacrity Enhancer - </em>You can sacrifice 5 hit points to gain an additional move action on your turn.  Each time you use this attribute beyond the first without getting a full night's rest, you move 1 persistent step down the condition track.", "inherent");
+		array_push($returnArray["attributes"], $push);
 		$attributeCount+=5;
 		$returnArray["uses"] = "Infinite Uses, but each use drains 1 hit point from the user.";
 	} elseif ($techRoll >= 46 && $techRoll <= 64) {
 		//mechanical
 		$returnArray["technology"] = "Mechanical";
-		array_push($returnArray["attributes"], "<em>Inherent Attribute – Change Form - </em>Mechanical artifacts lack the flexibility of more advanced artifacts such as nanotech and organic ones, but they retain a fair amount of flexibility themselves.  As a use of the artifact you can change it between Armor, Gear, and a Weapon (the type of the weapon is determined upon artifact creation).  Attributes are shared across these three forms, and attributes that cannot be used for a specific form are disabled while the artifact is in that form.");
+		$push = array("<em>Inherent Attribute – Change Form - </em>Mechanical artifacts lack the flexibility of more advanced artifacts such as nanotech and organic ones, but they retain a fair amount of flexibility themselves.  As a use of the artifact you can change it between Armor, Gear, and a Weapon (the type of the weapon is determined upon artifact creation).  Attributes are shared across these three forms, and attributes that cannot be used for a specific form are disabled while the artifact is in that form.", "inherent");
+		array_push($returnArray["attributes"], $push);
 		if ($returnArray["template"] == "Melee Weapon" || $returnArray["template"] == "Ranged Weapon") {
 			//Gear Form
 			$returnArray["primary skill boost"] = 10;
 			$skills = array_map('str_getcsv', file('data/artifactValidSkills.csv'));
 			$numSkills = count($skills);
 			$randSkill = $skills[(mt_rand(1,$numSkills)-1)];
-			$returnArray["primary skill"] = $randSkill;
+			$returnArray["primary skill"] = $randSkill[0];
 			array_push($returnArray["other notes"],"Every use of the skill boost counts as a use of the artifact.");
 			//Armor Form
 			$returnArray["DR"] = 5;
@@ -2007,7 +2022,7 @@ function generateArtifact($template = FALSE, $technology = FALSE) {
 			$skills = array_map('str_getcsv', file('data/artifactValidSkills.csv'));
 			$numSkills = count($skills);
 			$randSkill = $skills[(mt_rand(1,$numSkills)-1)];
-			$returnArray["primary skill"] = $randSkill;
+			$returnArray["primary skill"] = $randSkill[0];
 			array_push($returnArray["other notes"],"Every use of the skill boost counts as a use of the artifact.");
 			//Weapon
 			//determine type of weapon
@@ -2016,6 +2031,9 @@ function generateArtifact($template = FALSE, $technology = FALSE) {
 				//melee
 				$returnArray["damage"] = "1d8";
 				$returnArray["weaponType"] = "melee";
+				array_push($returnArray["other notes"], "Every attack with the weapon counts as a use of the artifact.");
+				$returnArray["reach"] = 0;
+				$returnArray["attack"] = 0;
 				$roll3 = mt_rand(1,3);
 				if ($roll3 == "1") {
 					$returnArray["damage type"] = "Bludgeoning";
@@ -2029,6 +2047,9 @@ function generateArtifact($template = FALSE, $technology = FALSE) {
 				$returnArray["damage"] = "2d6";
 				$returnArray["range"] = "Pistol";
 				$returnArray["weaponType"] = "ranged";
+				array_push($returnArray["other notes"], "Every attack with the weapon counts as a use of the artifact.");
+				$returnArray["attack"] = 0;
+				$returnArray["aoe"] = 0;
 				$roll3 = mt_rand(1,3);
 				if ($roll3 == "1") {
 					$returnArray["damage type"] = "Bludgeoning";
@@ -2042,7 +2063,10 @@ function generateArtifact($template = FALSE, $technology = FALSE) {
 				$returnArray["damage type"] = "Energy";
 				$returnArray["weaponType"] = "ranged";
 				$returnArray["damage"] = "3d4";
+				array_push($returnArray["other notes"], "Every attack with the weapon counts as a use of the artifact.");
 				$returnArray["range"] = "Pistol";
+				$returnArray["attack"] = 0;
+				$returnArray["aoe"] = 0;
 			}	
 		} else {
 			//Armor Form
@@ -2055,6 +2079,10 @@ function generateArtifact($template = FALSE, $technology = FALSE) {
 				//melee
 				$returnArray["damage"] = "1d8";
 				$returnArray["weaponType"] = "melee";
+				$returnArray["attack"] = 0;
+				$returnArray["reach"] = 0;
+				array_push($returnArray["other notes"], "Every attack with the weapon counts as a use of the artifact.");
+				$roll3 = mt_rand(1,3);
 				if ($roll3 == "1") {
 					$returnArray["damage type"] = "Bludgeoning";
 				} elseif ($roll3 == 2) {
@@ -2067,6 +2095,9 @@ function generateArtifact($template = FALSE, $technology = FALSE) {
 				$returnArray["damage"] = "2d6";
 				$returnArray["range"] = "Pistol";
 				$returnArray["weaponType"] = "ranged";
+				$returnArray["aoe"] = 0;
+				$returnArray["attack"] = 0;
+				array_push($returnArray["other notes"], "Every attack with the weapon counts as a use of the artifact.");
 				$roll3 = mt_rand(1,3);
 				if ($roll3 == "1") {
 					$returnArray["damage type"] = "Bludgeoning";
@@ -2081,6 +2112,9 @@ function generateArtifact($template = FALSE, $technology = FALSE) {
 				$returnArray["weaponType"] = "ranged";
 				$returnArray["damage"] = "3d4";
 				$returnArray["range"] = "Pistol";
+				array_push($returnArray["other notes"], "Every attack with the weapon counts as a use of the artifact.");
+				$returnArray["attack"] = 0;
+				$returnArray["aoe"] = 0;
 			}	
 		}
 		$attributeCount+=mt_rand(1,4);
@@ -2088,22 +2122,26 @@ function generateArtifact($template = FALSE, $technology = FALSE) {
 	} elseif ($techRoll >= 65 && $techRoll <= 79) {
 		//nanotechnology
 		$returnArray["technology"] = "Nanotechnology";
-		array_push($returnArray["attributes"], "<em>Inherent Attribute – Nanoflexibility - </em>Nanotech artifacts are inherently flexible due to the wide range of things that can be done with nanites.  A nanotech artifact is treated as having a nanite ability pool with one randomly-determined ability in it. This ability can be used once per encounter as normal. This ability can be changed by making a DC 30 Knowledge [Technology] or Nanite Control check.  If you do not have Nanite Control as a trained skill, you activate this nanite ability using your Knowledge [Technology] skill instead.");
+		$push = array("<em>Inherent Attribute – Nanoflexibility - </em>Nanotech artifacts are inherently flexible due to the wide range of things that can be done with nanites.  A nanotech artifact is treated as having a nanite ability pool with one randomly-determined ability in it. This ability can be used once per encounter as normal. This ability can be changed by making a DC 30 Knowledge [Technology] or Nanite Control check.  If you do not have Nanite Control as a trained skill, you activate this nanite ability using your Knowledge [Technology] skill instead.", "inherent");
+		array_push($returnArray["attributes"], $push);
 		$attributeCount+=mt_rand(1,6);
 		$returnArray["uses"] = mt_rand(1,6)." Uses, Recharge by feeding it half its weight in raw materials over the course of several hours.";
 	} elseif ($techRoll >= 80 && $techRoll <= 90) {
 		//organic
 		$returnArray["technology"] = "Organic";
-		array_push($returnArray["attributes"], "<em>Inherent Attribute – Self-Aware - </em>Organic artifacts are self-aware, conscious, and sentient.  They're not exactly intelligent on the level of what passes for a sentient species, rather they're roughly like sentient animals, or young children.  An organic artifact is treated as a 1st-level nonheroic creature with hit points appropriate for an object of its size.  Unless it is motile, it has no Strength or Dexterity score.  Its Constitution, Intelligence, Wisdom, and Charisma scores are equal to 6 plus the number of attributes the artifact has.  It gains the usual feats and trained skills.");
+		$push = array("<em>Inherent Attribute – Self-Aware - </em>Organic artifacts are self-aware, conscious, and sentient.  They're not exactly intelligent on the level of what passes for a sentient species, rather they're roughly like sentient animals, or young children.  An organic artifact is treated as a 1st-level nonheroic creature with hit points appropriate for an object of its size.  Unless it is motile, it has no Strength or Dexterity score.  Its Constitution, Intelligence, Wisdom, and Charisma scores are equal to 6 plus the number of attributes the artifact has.  It gains the usual feats and trained skills.", "inherent");
+		array_push($returnArray["attributes"], $push);
 		if (mt_rand(1,100) <= 5) {
-			array_push($returnArray["attributes"], "<em>Special Inherent Attribute – Adaptive - </em>An adaptive organic artifact responds to the wishes of its user, altering its attributes to suit the user's needs.  By making a DC 35 Knowledge [Life Sciences] check, an owner of an adaptive organic artifact can change one attribute of the artifact to another.  This takes 4 8-hour work periods and consumes a number of medpacs equal to the attributes that the artifact has.");
+			$push = array("<em>Special Inherent Attribute – Adaptive - </em>An adaptive organic artifact responds to the wishes of its user, altering its attributes to suit the user's needs.  By making a DC 35 Knowledge [Life Sciences] check, an owner of an adaptive organic artifact can change one attribute of the artifact to another.  This takes 4 8-hour work periods and consumes a number of medpacs equal to the attributes that the artifact has.", "inherent");
+		array_push($returnArray["attributes"], $push);
 		}
 		$attributeCount+=(mt_rand(1,4)+mt_rand(1,4)+1);
 		$returnArray["uses"] = "Infinite Uses";
 	} else {
 		//chemical
 		$returnArray["technology"] = "Chemical";
-		array_push($returnArray["attributes"], "<em>Inherent Attribute – Unstable - </em>\"Any sufficiently advanced technology is indistinguishable from a big gun,\" goes the saying.  Chemically-based artifacts are inherently unstable if handled in the wrong way (or the right way).  Any character that has determined at least the technology type of a chemical artifact can trigger the artifact to destructively overload.  This explosively destroys the artifact two rounds after it has been overloaded, dealing 10d6 damage per use the artifact had left, functioning as an explosive charge that can be set with the Mechanics skill or as a grenade (which can be thrown at standard Simple ranged weapon ranges).");
+		$push = array("<em>Inherent Attribute – Unstable - </em>\"Any sufficiently advanced technology is indistinguishable from a big gun,\" goes the saying.  Chemically-based artifacts are inherently unstable if handled in the wrong way (or the right way).  Any character that has determined at least the technology type of a chemical artifact can trigger the artifact to destructively overload.  This explosively destroys the artifact two rounds after it has been overloaded, dealing 10d6 damage per use the artifact had left, functioning as an explosive charge that can be set with the Mechanics skill or as a grenade (which can be thrown at standard Simple ranged weapon ranges).", "inherent");
+		array_push($returnArray["attributes"], $push);
 		$attributeCount+=mt_rand(1,4);
 		$returnArray["uses"] = mt_rand(1,4)." Uses, No Recharge Possible";
 	}
@@ -2135,21 +2173,377 @@ function generateArtifact($template = FALSE, $technology = FALSE) {
 	}
 	$attributePoolCount = count($attributeArray);
 	$attributeNum = 1;
-	echo "ATTRIBUTE POOL COUNT: ".$attributePoolCount."<br>ATTRIBUTE POOL: ".$attributeCount."<br>";
-	
+	//echo "ATTRIBUTE POOL COUNT: ".$attributePoolCount."<br>ATTRIBUTE POOL: ".$attributeCount."<br>";
+	$autoshields = 0;
 	while ($attributeNum <= $attributeCount) {
-		echo "ZING<br>";
+		//echo "ZING<br>";
 		$attributeNumber = mt_rand(1,$attributePoolCount);
-		echo $attributeNumber."<br>";
-		echo $attributeArray[($attributeNumber-1)][0];
+		//echo $attributeNumber."<br>";
+		//echo $attributeArray[($attributeNumber-1)][0];
 		if ($attributeArray[($attributeNumber-1)][0] == "modifier") {
-			echo "BAR<br>";
+			$amount = $attributeArray[($attributeNumber-1)][1];
+			$modifying = $attributeArray[($attributeNumber-1)][2];
+			//altering parameters of the artifact (weight, hardness, hit points, DR, primary skill boost, attack, reach, aoe)
+			$testVs = array ("weight", "hardness", "hit points", "DR", "primary skill boost", "attack", "reach", "aoe");
+			if (in_array($modifying, $testVs)) {
+				if (($returnArray[$modifying] + $amount) > 0) {
+					$returnArray[$modifying]+=$amount;
+					$attributeNum++;
+				}
+			} else {
+				//damage
+				if ($modifying == "damage") {
+					$currentDamage = explode("+", $returnArray["damage"]);
+					if (isset($currentDamage[1])) {
+						if ($currentDamage[1] == "3") {
+							$currentDamage[1] = 0;
+							$currentDamage[0] = increaseDamageDice($currentDamage[0], 1);
+							$returnArray["damage"] = implode("+", $currentDamage);
+						}
+						else {
+							$currentDamage[1]++;
+							$returnArray["damage"] = implode("+", $currentDamage);
+						}
+						$attributeNum++;
+					} else {
+						$currentDamage[1] = 1;
+						$returnArray["damage"] = implode("+", $currentDamage);
+						$attributeNum++;
+					}
+				}
+				//range
+				if ($modifying == "range") {
+					switch ($returnArray["range"]) {
+						case "Pistol":
+							$returnArray["range"] = "Rifle";
+							$attributeNum++;
+							break;
+						case "Rifle":
+							$returnArray["range"] = "Rifle";
+							$attributeNum++;
+							break;
+						case "Heavy":
+							break;
+					}
+				}
+			}
+			
 		} elseif ($attributeArray[($attributeNumber-1)][0] == "attribute") {
-			echo "FOO<br>";
-			array_push($returnArray["attributes"], $attributeArray[($attributeNumber-1)][1]);
+			//adding attributes to the artifact
+			$testArray = array($attributeArray[($attributeNumber-1)][1], $attributeArray[($attributeNumber-1)][2]);
+			$push = array($attributeArray[($attributeNumber-1)][1], $attributeArray[($attributeNumber-1)][2]);
+			if (!in_array($push, $returnArray["attributes"])) {
+				//$push = array($attributeArray[($attributeNumber-1)][1], $attributeArray[($attributeNumber-1)][2]);
+				array_push($returnArray["attributes"], $push);
+				$attributeNum++;
+			}
+		} elseif ($attributeArray[($attributeNumber-1)][0] == "function") {
+			//secondary skill boosts and autoshields
+			if ($attributeArray[($attributeNumber-1)][1] == "autoshields") {
+				//autoshields
+				if ($autoshields == 0) {
+					$autoshields = 1;
+					array_push($returnArray["autoshields"], $attributeArray[($attributeNumber-1)][2]);
+					$attributeNum++;
+				} else {
+					if (!in_array($attributeArray[($attributeNumber-1)][2], $returnArray["autoshields"])) {
+						array_push($returnArray["autoshields"], $attributeArray[($attributeNumber-1)][2]);
+						$attributeNum++;
+					}
+				}
+			} elseif ($attributeArray[($attributeNumber-1)][1] == "secondary skill") {
+				//secondary skill boost
+				$amount = $attributeArray[($attributeNumber-1)][2];
+				$skills = array_map('str_getcsv', file('data/artifactValidSkills.csv'));
+				if(($key = array_search($returnArray["primary skill"][0], $skills)) !== false) {
+				    unset($skills[$key]);
+				}	
+				$numSkills = count($skills);
+				$randSkill = $skills[(mt_rand(1,$numSkills)-1)];
+				if (isset($returnArray["secondary skills"][$randSkill[0]])) {
+					$returnArray["secondary skills"][$randSkill[0]]+=$amount;
+				} else {
+					$returnArray["secondary skills"][$randSkill[0]]=$amount;
+				}
+				$attributeNum++;
+			} elseif ($attributeArray[($attributeNumber-1)][1] == "DR vs Specific") {
+				$physicalDamage = array("Bludgeoning","Piercing","Slashing","Bludgeoning/Piercing/Slashing (Explosive)","Nonlethal");
+				$energyDamage = array("Energy","Electricity","Cold","Fire","Acid","Sonic","Ion","Stun","Radiation");
+				$damageTypes = array_merge($energyDamage,$physicalDamage);
+				$roll = mt_rand(1,count($damageTypes));
+				if (isset($returnArray["specificDR"])) {
+					if (isset($returnArray[$damageTypes[($roll-1)]])) {
+						$returnArray[$damageTypes[($roll-1)]]+=4;
+					} else {
+						$returnArray[$damageTypes[($roll-1)]] = 4;
+					}
+				} else {
+					$returnArray["specificDR"] = array();
+					$returnArray[$damageTypes[($roll-1)]] = 4;
+				}
+				$attributeNum++;
+			}
 		}
-		$attributeNum++;
 	}
-	return $returnArray;
+	//return $returnArray;
+	$returnString = "";
+	$returnString.="<ul>";
+	$returnString.="<li><strong>Type Of Artifact: </strong>".$returnArray["template"]."</li>";
+	$returnString.="<li><strong>Technology: </strong>".$returnArray["technology"]."</li>";
+	$returnString.="<li><strong>Hardness: </strong>".$returnArray["hardness"]."</li>";
+	$returnString.="<li><strong>Hit Points: </strong>".$returnArray["hit points"]."</li>";
+	$returnString.="<li><strong>Weight: </strong>".$returnArray["weight"]." kg</li>";
+	$returnString.="<li><strong>Maximum Uses: </strong>".$returnArray["uses"]."</li>";
+	$returnString.="<li><strong>FEATURES:</strong><ul>";
+	if ($returnArray["technology"] == "Mechanical") {
+		$returnString.="<li>";
+		//weapon stuff here
+		if ($returnArray["weaponType"] == "ranged") {
+			//ranged weapon
+			$returnString.="RANGED WEAPON FORM<ul><li>Damage: ".$returnArray["damage"]." ".$returnArray["damage type"]."</li>";
+			if ($returnArray["aoe"]!=0) {
+				$returnString.=" in a ".$returnArray["aoe"]."-square radius burst that must originate within the weapon's range.";
+			}
+			$returnString.="<li>Range: ".$returnArray["range"]."</li>";
+			$returnString.="</li>";
+			if ($returnArray["attack"]!=0) {
+				$returnString.="<li>Attack rolls with this weapon gain a +".$returnArray["attack"]." bonus.</li>";
+			}
+		} else {
+			//melee weapon
+			$returnString.="MELEE WEAPON FORM<ul><li>Damage: ".$returnArray["damage"]." ".$returnArray["damage type"]."</li>";
+			if ($returnArray["reach"]!=0) {
+				$returnString.=" with a ".($returnArray["reach"]+1)."-square reach.";
+			}
+			$returnString.="</li>";
+			if ($returnArray["attack"]!=0) {
+				$returnString.="<li>Attack rolls with this weapon gain a +".$returnArray["attack"]." bonus.</li>";
+			}
+		}
+		foreach ($returnArray["attributes"] as $attribute) {
+				if ($attribute[1] == "weapon") {
+					$returnString.="<li>".$attribute[0]."</li>";
+				}
+			}
+		$returnString.="</ul></li>";
+		$returnString.="<li>GEAR FORM<ul>";
+		//gear stuff here
+		$returnString.="<li><em>Skill Boost: +</em>".$returnArray["primary skill boost"]." bonus to ".$returnArray["primary skill"]."</li>";
+		if (count($returnArray["secondary skills"])!=0) {
+			foreach ($returnArray["secondary skills"] as $skill => $bonus) {
+				$returnString.="<li><em>Skill Boost: +</em>".$bonus." bonus to ".$skill."</li>";
+			}
+		}
+		foreach ($returnArray["attributes"] as $attribute) {
+				if ($attribute[1] == "gear") {
+					$returnString.="<li>".$attribute[0]."</li>";
+				}
+			}
+		$returnString.="</ul></li>";
+		$returnString.="<li>ARMOR FORM<ul>";
+		//armor stuff here
+		$returnString.="<li><em>Damage Reduction: </em>".$returnArray["DR"]."</li>";
+		if (isset($returnArray["specificDR"])) {
+			$physicalDamage = array("Bludgeoning","Piercing","Slashing","Bludgeoning/Piercing/Slashing (Explosive)","Nonlethal");
+			$energyDamage = array("Energy","Electricity","Cold","Fire","Acid","Sonic","Ion","Stun","Radiation");
+			foreach ($returnArray["specificDR"] as $type => $bonus) {
+				if(array_search($type,$physicalDamage)) {
+					$returnString.="<li><em>Damage Reduction versus ".$type." damage: </em>".$bonus."</li>";
+				} else {
+					$returnString.="<li><em>Energy Resistance versus ".$type.": </em>".$bonus.".</li>";
+				}
+			}
+		}
+		foreach ($returnArray["attributes"] as $attribute) {
+				if ($attribute[1] == "armor") {
+					$returnString.="<li>".$attribute[0]."</li>";
+				}
+			}
+		$returnString.="</ul></li>";
+		$returnString.="<li>ALL FORMS<ul>";
+		//all-form stuff here
+			foreach ($returnArray["attributes"] as $attribute) {
+				if (!is_array($attribute)) {
+					$returnString.="<li>".$attribute."</li>";
+				} elseif ($attribute[1] == "generic" || $attribute[1] == "inherent") {
+					$returnString.="<li>".$attribute[0]."</li>";
+				}
+			}
+			if (count($returnArray["autoshields"])!=0) {
+				$returnString.="<li><em>Tech-Based Autoshields – </em>Functionally, autoshields are treated as an additional hit point pool equal to 15 * the user's Heroic Level.  While the autoshields are active, damage comes off the autoshields before applying the effects of damage reduction.  If you have any form of personal shielding (anything with an actual SR score), determine the effects on that before determining the effects on your autoshields.  The autoshield's hit points are also reduced by 1 HP per round when activated. Autoshields reduced to 0 HP are not destroyed, but are temporarily rendered inactive (switched off). Autoshields regenerates lost HP at a rate of 1 HP per round while the autoshield is switched off.  Each activation of the autoshields (turning them on) counts as a use of the artifact.  Autoshields can only be used while an artifact is worn, handled, or wielded (in the case of weapons).  Each variety of autoshields protects against a different kid of damage.  The same artifact can have multiple types of autoshields – in this case, the artifact still only has a single pool of autoshields hit points, it just can be used to protect the user from multiple types of damage.  This artifact has the following kind(s) of autoshields:<ul>";
+				foreach ($returnArray["autoshields"] as $shield) {
+					switch ($shield) {
+						case "ranged":
+							$returnString.="<li><em>Ranged – </em>Protects against bludgeoning, slashing, and piercing damage dealt by ranged attacks.</li>";
+							break;
+						case "melee":
+							$returnString.="<li><em>Melee – </em>Protects against bludgeoning, slashing, and piercing damage dealt by melee attacks.</li>";
+							break;
+						case "energy":
+							$returnString.="<li><em>Energy – </em>Protects against electricity, energy, fire, ion, radiation, and stun damage.  When protecting from radiation, any damage that the user would take from the radiation is dealt to the autoshields.</li>";
+							break;
+						case "explosive":
+							$returnString.="<li><em>Explosive – </em>Protects against bludgeoning/slashing/piercing damage, that is – damage that does all three kinds at once.  The most common source of this damage is explosions.</li>";
+							break;
+					}
+				}
+				$returnString.="</ul></li>";
+			}
+		$returnString.="</ul></li>";
+	} else {
+		if ($returnArray["template"] == "Ranged Weapon") {
+			//ranged weapon
+			$returnString.="<li>Damage: ".$returnArray["damage"]." ".$returnArray["damage type"];
+			if ($returnArray["aoe"]!=0) {
+				$returnString.=" in a ".$returnArray["aoe"]."-square radius burst that must originate within the weapon's range.";
+			}
+			$returnString.="</li>";
+			$returnString.="<li>Range: ".$returnArray["range"]."</li>";
+			if ($returnArray["attack"]!=0) {
+				$returnString.="<li>Attack rolls with this weapon gain a +".$returnArray["attack"]." bonus.</li>";
+			}
+			
+		} elseif ($returnArray["template"]  == "Melee Weapon") {
+			//melee weapon
+			$returnString.="<li>Damage: ".$returnArray["damage"]." ".$returnArray["damage type"];
+			if ($returnArray["reach"]!=0) {
+				$returnString.=" with a ".($returnArray["reach"]+1)."-square reach.";
+			}
+			$returnString.="</li>";
+			if ($returnArray["attack"]!=0) {
+				$returnString.="<li>Attack rolls with this weapon gain a +".$returnArray["attack"]." bonus.</li>";
+			}
+					
+			
+		} elseif ($returnArray["template"] == "Gear") {
+			//gear stuff here
+			$returnString.="<li><em>Skill Boost: +</em>".$returnArray["primary skill boost"]." bonus to ".$returnArray["primary skill"]."</li>";
+			if (count($returnArray["secondary skills"])!=0) {
+				foreach ($returnArray["secondary skills"] as $skill => $bonus) {
+					$returnString.="<li><em>Skill Boost: +</em>".$bonus." bonus to ".$skill."</li>";
+				}
+			}
+			
+		} elseif ($returnArray["template"] == "Armor") {
+			//armor stuff here
+			$returnString.="<li><em>Damage Reduction: </em>".$returnArray["DR"]."</li>";
+			if (isset($returnArray["specificDR"])) {
+				$physicalDamage = array("Bludgeoning","Piercing","Slashing","Bludgeoning/Piercing/Slashing (Explosive)","Nonlethal");
+				$energyDamage = array("Energy","Electricity","Cold","Fire","Acid","Sonic","Ion","Stun","Radiation");
+				foreach ($returnArray["specificDR"] as $type => $bonus) {
+					if(array_search($type,$physicalDamage)) {
+						$returnString.="<li><em>Damage Reduction versus ".$type." damage: </em>".$bonus."</li>";
+					} else {
+						$returnString.="<li><em>Energy Resistance versus ".$type.": </em>".$bonus.".</li>";
+					}
+				}
+			}
+		}
+		//attribute stuff here
+		foreach ($returnArray["attributes"] as $attribute) {
+			if (!is_array($attribute)) {
+				$returnString.="<li>".$attribute."</li>";
+			} else {
+				$returnString.="<li>".$attribute[0]."</li>";
+			}
+		}
+		if (count($returnArray["autoshields"])!=0) {
+				$returnString.="<li><em>Tech-Based Autoshields – </em>Functionally, autoshields are treated as an additional hit point pool equal to 15 * the user's Heroic Level.  While the autoshields are active, damage comes off the autoshields before applying the effects of damage reduction.  If you have any form of personal shielding (anything with an actual SR score), determine the effects on that before determining the effects on your autoshields.  The autoshield's hit points are also reduced by 1 HP per round when activated. Autoshields reduced to 0 HP are not destroyed, but are temporarily rendered inactive (switched off). Autoshields regenerates lost HP at a rate of 1 HP per round while the autoshield is switched off.  Each activation of the autoshields (turning them on) counts as a use of the artifact.  Autoshields can only be used while an artifact is worn, handled, or wielded (in the case of weapons).  Each variety of autoshields protects against a different kid of damage.  The same artifact can have multiple types of autoshields – in this case, the artifact still only has a single pool of autoshields hit points, it just can be used to protect the user from multiple types of damage.  This artifact has the following kind(s) of autoshields:<ul>";
+				foreach ($returnArray["autoshields"] as $shield) {
+					switch ($shield) {
+						case "ranged":
+							$returnString.="<li><em>Ranged – </em>Protects against bludgeoning, slashing, and piercing damage dealt by ranged attacks.</li>";
+							break;
+						case "melee":
+							$returnString.="<li><em>Melee – </em>Protects against bludgeoning, slashing, and piercing damage dealt by melee attacks.</li>";
+							break;
+						case "energy":
+							$returnString.="<li><em>Energy – </em>Protects against electricity, energy, fire, ion, radiation, and stun damage.  When protecting from radiation, any damage that the user would take from the radiation is dealt to the autoshields.</li>";
+							break;
+						case "explosive":
+							$returnString.="<li><em>Explosive – </em>Protects against bludgeoning/slashing/piercing damage, that is – damage that does all three kinds at once.  The most common source of this damage is explosions.</li>";
+							break;
+					}
+				}
+				$returnString.="</ul></li>";
+			}
+	}
+	$returnString.="</ul></li><li><strong>ADDITIONAL NOTES:</strong><ul>";
+	foreach ($returnArray["other notes"] as $note) {
+		$returnString.="<li>".$note."</li>";
+	}
+	$returnString.="</ul></li>";
+	$returnString.="</ul>";
+	return $returnString;
+}
+
+function increaseDamageDice ($startingDice, $steps) {
+	$chart = array("1", "1d2", "1d3", "1d4", "1d6", "1d8", "1d10", "2d6", "2d8", "3d6", "3d8", "4d6", "4d8", "6d6", "6d8", "8d6", "8d8", "12d6", "12d8", "16d6");
+	if (in_array($startingDice, $chart)) {
+		$pointer = array_search($startingDice, $chart);
+		return $chart[$pointer+$steps];
+	} else {
+		$parsed = explode("d", $startingDice);
+		if ($parsed[1] == "6") {
+			$continue = TRUE;
+			$count = 0;
+			while ($continue == TRUE) {
+				$parsed[0]--;
+				if (in_array($parsed[0]."d6", $chart)) {
+					$point = array_search($parsed[0]."d8");
+					$count++;
+					if ($count == $steps) {
+						$continue = FALSE;
+						return $chart[$point+$steps];
+					} else {
+						$continue = FALSE;
+						return increaseDamageDice($chart[$point+$steps], $steps-1);
+					}
+					
+				}
+			}
+		}
+		if ($parsed[1] == "8") {
+			$continue = TRUE;
+			$count = 0;
+			while ($continue == TRUE) {
+				$parsed[0]++;
+				if (in_array($parsed[0]."d8", $chart)) {
+					$point = array_search($parsed[0]."d8", $chart);
+					$bla = explode("d", $chart[$point]);
+					$count++;
+					if ($count == $steps) {
+						$continue = FALSE;
+						return $bla[0]."d6";
+					} else {
+						$continue = FALSE;
+						return increaseDamageDice($bla[0]."d6", $steps-1);
+					}
+				}
+			}
+		}
+		if ($parsed[1] == "10") {
+			if ($startingDice == "2d10") {
+				if ($steps > 1) {
+					return increaseDamageDice("2d10", $steps-1);
+				} elseif ($steps == "1") {
+					return "2d10";
+				} elseif ($steps == -1) {
+					return "2d8";
+				} elseif ($steps < -1) {
+					return increaseDamageDice("2d10", $steps+1);
+				}
+			}
+		}
+		if ($startingDice == "2d4") {
+			return increaseDamageDice("1d8", $steps);
+		}
+		if ($startingDice == "3d4") {
+			return increaseDamageDice("2d6", $steps);
+		}
+		if ($startingDice == "1d12") {
+			return increaseDamageDice("2d6", $steps);
+		}
+	}
 }
 ?>
