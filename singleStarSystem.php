@@ -343,13 +343,13 @@ if ($numPlanets > 0) {
 				if ($roll == 1) {
 					echo "<li>Alien Artifacts Possible</li>";
 				}
-				echo "</ul></li>";
+				echo "</li></ul>";
 				$currentMoon++;
 			}
 			echo "</ul></li>";
 		}
 		if ($numMoonlets > 0) {
-			echo "<li>".$numMoons." Moonlets</li>";
+			echo "<li>".$numMoonlets." Moonlets</li>";
 		}
 		echo "</ul></li></ul>";
 		//end planet generation
