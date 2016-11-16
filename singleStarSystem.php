@@ -238,17 +238,17 @@ if ($numPlanets > 0) {
 				//MOON SIZE
 				//$size[0] key: 1 = diminutive, 2 = fine, 3 = tiny, 4 = small, 5 = medium, 6 = large, 7 = huge, 8 = small gas giant, 9 = medium gas giant, 10 = huge gas giant, 11 = gargantuan gas giant, 12 = y-class brown dwarf
 				//$size[1] is the size text
-				/*$moonSize = genPlanetSize($zone, $moonType, TRUE, $size[0]);
+				$moonSize = genPlanetSize($zone, $moonType, TRUE, $size[0]);
 				echo "<li>".$moonSize[1]."</li>";
 				//MOON GRAVITY
 				//$gravity[0] key: 1 = microgravity, 2 = very low gravity, 3 = low gravity, 4 = standard gravity, 5 = high gravity, 6 = very high gravity, 7 = extreme gravity
-				/*if ($moonSize[0] <= 7) {
+				if ($moonSize[0] <= 7) {
 					$moonGravity = genGravity($size[0],$moonType, TRUE, $gravity[0]);
 				} else {
-					$moonGravity [0] = 7;
-					$moonGravity [1] = "Extreme Gas Giant Gravity (way more than 4.0 G)";
+					$moonGravity[0] = 7;
+					$moonGravity[1] = "Extreme Gas Giant Gravity (way more than 4.0 G)";
 				}
-				echo "<li>".$moonGravity [1]."</li>";
+				echo "<li>".$moonGravity[1]."</li>";
 				//MOON ATMOSPHERIC DENSITY
 				//$atmosphere[0] key: 1 = vacuum, 2 = very thin, 3 = thin, 4 = standard, 5 = dense, 6 = very dense, 7 = extremely dense
 				if ($moonSize[0] <= 7) {
@@ -339,7 +339,7 @@ if ($numPlanets > 0) {
 				$roll = mt_rand(1,100);
 				if ($roll == 1) {
 					echo "<li>Alien Artifacts Possible</li>";
-				}*/
+				}
 				echo "</ul></li>";
 				$currentMoon++;
 			}

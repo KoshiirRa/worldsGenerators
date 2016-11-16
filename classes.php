@@ -348,7 +348,7 @@ function genRoids($modifier) {
 	return $returnString;
 }
 
-function genPlanetSize($zone, $type, $moon = FALSE, $planetSize = FALSE) {
+function genPlanetSize($zone, $type, $moon = FALSE, $planetSize = 1) {
 	$modifier = 0;
 	$returnArray = array(); //[0] is size code, [1] is the size string
 	//$zone key: 1 = hot zone, 2 = habitable zone, 3 = cold zone
@@ -407,12 +407,12 @@ function genPlanetSize($zone, $type, $moon = FALSE, $planetSize = FALSE) {
 	}
 	//check to make sure moon is not larger than planet
 	if ($moon == TRUE) {
-		$loop = TRUE;
-		while ($loop = TRUE) {
-			if ($planetSize >= $returnArray[0]) {
+		$loop = 2;
+		while ($loop == 2) {
+			if ($planetSize <= $returnArray[0]) {
 				$returnArray[0]--;
 			} else {
-				$loop = FALSE;
+				$loop = 1;
 			}
 		}
 	}
@@ -582,8 +582,8 @@ function genGravity ($size, $type, $moon = FALSE, $planetGrav = FALSE) {
 	}
 	if ($planetGrav != FALSE) {
 		$loop = TRUE;
-		while ($loop = TRUE) {
-			if ($planetGrav >= $returnArray[0]) {
+		while ($loop == TRUE) {
+			if ($planetGrav <= $returnArray[0]) {
 				$returnArray[0]--;
 			} else {
 				$loop = FALSE;
