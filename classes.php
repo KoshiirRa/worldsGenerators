@@ -1628,10 +1628,10 @@ function genQuirk($type, $force = FALSE) {
 					$returnText = "<em>Symbiotic - </em>The race is actually a combination of two races, the primary form rolled initially, and a symbiote which is rolled separately.";
 					break;
 				case "9":
-					$returnText = "<em>Large Size - </em>This life form is Large sized instead of Medium sized.  In the event that this is rolled multiple times, each time it is rolled increases the size by another step (Large->Huge->Gargantuan->Colossal->Colossal(Frigate)->Colossal(Cruiser)->Colossal(Station))";
+					$returnText = "<em>Large Size - </em>This life form is Large sized instead of Medium sized.  In the event that this is rolled multiple times, each time it is rolled increases the size by another step (Large&#8594;Huge&#8594;Gargantuan&#8594;Colossal&#8594;Colossal(Frigate)&#8594;Colossal(Cruiser)&#8594;Colossal(Station))";
 					break;
 				case "10":
-					$returnText = "<em>Small Size - </em>This life form is Small sized instead of Medium sized.  In the event that this is rolled multiple times, each time it is rolled decreases the size by another step (Small->Tiny->Diminutive->Fine)";
+					$returnText = "<em>Small Size - </em>This life form is Small sized instead of Medium sized.  In the event that this is rolled multiple times, each time it is rolled decreases the size by another step (Small&#8594;Tiny&#8594;Diminutive&#8594;Fine)";
 					break;
 				case "11":
 					$returnText = "<em>Naturally Combatant - </em>The life form has grown up in a culture that revels in or forces its members to use their natural appendages to battle or hunt, making them naturally powerful in close combat.  They likely  have claws, fangs, horns or some other natural weaponry in addition to a way to survive blows inflicted upon them.  Due to these evolutionary benefits, the organism gains the following bonuses: Natural Weaponry (claws, fangs, horns or spikes that count as natural weapons which inflict 1d6 damage), Natural Protection (scales, hide or fat that grants natural DR equal to their Constitution modifier), and Battle Instincts (a bonus to their Unarmed Attack and natural weapon attack equal to their Wisdom modifier)";
@@ -1696,10 +1696,10 @@ function genQuirk($type, $force = FALSE) {
 					}
 					break;
 				case "9":
-					$returnText = "<em>Large Size - </em>This life form is Large sized instead of Medium sized.  In the event that this is rolled multiple times, each time it is rolled increases the size by another step (Large->Huge->Gargantuan->Colossal->Colossal(Frigate)->Colossal(Cruiser)->Colossal(Station))";
+					$returnText = "<em>Large Size - </em>This life form is Large sized instead of Medium sized.  In the event that this is rolled multiple times, each time it is rolled increases the size by another step (Large&#8594;Huge&#8594;Gargantuan&#8594;Colossal&#8594;Colossal(Frigate)&#8594;Colossal(Cruiser)&#8594;Colossal(Station))";
 					break;
 				case "10":
-					$returnText = "<em>Small Size - </em>This life form is Small sized instead of Medium sized.  In the event that this is rolled multiple times, each time it is rolled decreases the size by another step (Small->Tiny->Diminutive->Fine)";
+					$returnText = "<em>Small Size - </em>This life form is Small sized instead of Medium sized.  In the event that this is rolled multiple times, each time it is rolled decreases the size by another step (Small&#8594;Tiny&#8594;Diminutive&#8594;Fine)";
 					break;
 			}
 			break;
