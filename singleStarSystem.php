@@ -248,6 +248,7 @@ if ($numPlanets > 0) {
 					$moonGravity[0] = 7;
 					$moonGravity[1] = "Extreme Gas Giant Gravity (way more than 4.0 G)";
 				}
+				//var_dump($moonGravity);
 				echo "<li>".$moonGravity[1]."</li>";
 				//MOON ATMOSPHERIC DENSITY
 				//$atmosphere[0] key: 1 = vacuum, 2 = very thin, 3 = thin, 4 = standard, 5 = dense, 6 = very dense, 7 = extremely dense

@@ -580,11 +580,15 @@ function genGravity ($size, $type, $moon = FALSE, $planetGrav = FALSE) {
 			}
 			break;
 	}
+	var_dump($returnArray);
 	if ($planetGrav != FALSE) {
 		$loop = TRUE;
 		while ($loop == TRUE) {
+			//echo "FOO";
+			//var_dump($returnArray);
 			if ($planetGrav <= $returnArray[0]) {
 				$returnArray[0]--;
+				//echo "REDUCTION";
 			} else {
 				$loop = FALSE;
 			}
