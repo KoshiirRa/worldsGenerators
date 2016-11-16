@@ -1883,7 +1883,7 @@ function generateArtifact($template = FALSE, $technology = FALSE) {
 		$returnArray["template"] = "Gear";
 		$returnArray["weight"] = 5;
 		$returnArray["primary skill boost"] = 10;
-		$skills = array_map('str_getcsv', file('artifactValidSkills.csv'));
+		$skills = array_map('str_getcsv', file('data/artifactValidSkills.csv'));
 		$numSkills = count($skills);
 		$randSkill = $skills[(mt_rand(1,$numSkills)-1)];
 		$returnArray["primary skill"] = $randSkill;
@@ -1988,7 +1988,7 @@ function generateArtifact($template = FALSE, $technology = FALSE) {
 		if ($returnArray["template"] == "Melee Weapon" || $returnArray["template"] == "Ranged Weapon") {
 			//Gear Form
 			$returnArray["primary skill boost"] = 10;
-			$skills = array_map('str_getcsv', file('artifactValidSkills.csv'));
+			$skills = array_map('str_getcsv', file('data/artifactValidSkills.csv'));
 			$numSkills = count($skills);
 			$randSkill = $skills[(mt_rand(1,$numSkills)-1)];
 			$returnArray["primary skill"] = $randSkill;
@@ -1999,7 +1999,7 @@ function generateArtifact($template = FALSE, $technology = FALSE) {
 		} elseif ($returnArray["template"] == "Armor") {
 			//Gear Form
 			$returnArray["primary skill boost"] = 10;
-			$skills = array_map('str_getcsv', file('artifactValidSkills.csv'));
+			$skills = array_map('str_getcsv', file('data/artifactValidSkills.csv'));
 			$numSkills = count($skills);
 			$randSkill = $skills[(mt_rand(1,$numSkills)-1)];
 			$returnArray["primary skill"] = $randSkill;
@@ -2103,28 +2103,28 @@ function generateArtifact($template = FALSE, $technology = FALSE) {
 		$returnArray["uses"] = mt_rand(1,4)." Uses, No Recharge Possible";
 	}
 	//attribute generation
-	$generic = array_map('str_getcsv', file('genericArtifactAttributes.csv'));
+	$generic = array_map('str_getcsv', file('data/genericArtifactAttributes.csv'));
 	if ($returnArray["technology"] == "Mechanical") {
-		$gear = array_map('str_getcsv', file('gearArtifactAttributes.csv'));
-		$armor = array_map('str_getcsv', file('armorArtifactAttributes.csv'));
+		$gear = array_map('str_getcsv', file('data/gearArtifactAttributes.csv'));
+		$armor = array_map('str_getcsv', file('data/armorArtifactAttributes.csv'));
 		if ($returnArray["weaponType"] == "ranged") {
-			$weapon = array_map('str_getcsv', file('meleeWeaponArtifactAttributes.csv'));
+			$weapon = array_map('str_getcsv', file('data/meleeWeaponArtifactAttributes.csv'));
 		} else {
-			$weapon = array_map('str_getcsv', file('rangedWeaponArtifactAttributes.csv'));
+			$weapon = array_map('str_getcsv', file('data/rangedWeaponArtifactAttributes.csv'));
 		}
 		$attributeArray = array_merge($generic, $gear, $armor, $weapon);
 	} else {
 		if ($returnArray["template"] == "Ranged Weapon") {
-			$weapon = array_map('str_getcsv', file('rangedWeaponArtifactAttributes.csv'));
+			$weapon = array_map('str_getcsv', file('data/rangedWeaponArtifactAttributes.csv'));
 			$attributeArray = array_merge($generic, $weapon);
 		} elseif ($returnArray["template"] == "Melee Weapon") {
-			$weapon = array_map('str_getcsv', file('meleeWeaponArtifactAttributes.csv'));
+			$weapon = array_map('str_getcsv', file('data/meleeWeaponArtifactAttributes.csv'));
 			$attributeArray = array_merge($generic, $weapon);
 		} elseif ($returnArray["template"] == "Armor") {
-			$armor = array_map('str_getcsv', file('armorArtifactAttributes.csv'));
+			$armor = array_map('str_getcsv', file('data/armorArtifactAttributes.csv'));
 			$attributeArray = array_merge($generic, $armor);
 		} elseif ($returnArray["template"] == "Gear") {
-			$gear = array_map('str_getcsv', file('gearArtifactAttributes.csv'));
+			$gear = array_map('str_getcsv', file('data/gearArtifactAttributes.csv'));
 			$attributeArray = array_merge($generic, $gear);
 		}
 	}

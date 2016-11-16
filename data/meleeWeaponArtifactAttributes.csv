@@ -1,0 +1,8 @@
+modifier	1	reach
+modifier	1	damage
+modifier	1	attack
+attribute	"<em>Penetrate DR – </em>the attack penetrates DR from anything other than organic technology or natural damage reduction."	
+attribute	"<em>Variable – </em>the item can control its damage – output, selecting any amount of damage up to the maximum rolled."	
+attribute	"<em>Touch Attack – </em>the item makes a touch attack rather than a regular attack, ignoring all forms of armor and natural armor."	
+attribute	"<em>Keen – </em>This weapon threatens a critical hit on a roll of 19 or 20, instead of only a 20.  If you already threaten a critical hit on a roll of 19 or 20, you now threaten critical hits on a roll of 17, 18, 19, or 20.  As normal, only a natural 20 is an automatic hit."	
+attribute	"<em>Merciful – </em>The weapon deals an additional die of damage, but all the damage the weapon does is nonlethal (if a melee weapon or a projectile weapon) or stun (if the weapon is an energy weapon).  This ability can be activated and deactivated as a swift action."	
