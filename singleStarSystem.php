@@ -186,7 +186,7 @@ if ($numPlanets > 0) {
 		}
 		
 		//MOON GENERATION (OH GODS WHY)
-		/*$numMoons = 0;
+		$numMoons = 0;
 		$numMoonlets = 0;
 //$size[0] key: 1 = diminutive, 2 = fine, 3 = tiny, 4 = small, 5 = medium, 6 = large, 7 = huge, 8 = small gas giant, 9 = medium gas giant, 10 = huge gas giant, 11 = gargantuan gas giant, 12 = y-class brown dwarf
 		if ($size[0] == 8 || $size[0] == 9) {
@@ -207,7 +207,7 @@ if ($numPlanets > 0) {
 		}
 		if ($numMoons > 0) {
 			echo "<li>".$numMoons." Moons<ul>";
-			$currentMoon = 1;
+			/*$currentMoon = 1;
 			while ($currentMoon <= $numMoons) {
 				if ($zone = "1") {
 					$moonType = 2;
@@ -339,12 +339,12 @@ if ($numPlanets > 0) {
 				if ($roll == 1) {
 					echo "<li>Alien Artifacts Possible</li>";
 				}
-			}
+			}*/
 			echo "</ul></li>";
 		}
 		if ($numMoonlets > 0) {
 			echo "<li>".$numMoons." Moonlets</li>";
-		}*/
+		}
 		echo "</ul>";
 		//end planet generation
 	}
