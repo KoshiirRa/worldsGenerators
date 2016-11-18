@@ -155,13 +155,13 @@ if ($numPlanets > 0) {
 					$word = "complex";
 				}
 				if ($planetBiosphere[1] == 7) {
-					$stringHolder.="<ul><li>".genQuirk("sentient")."</li></ul>";
+					$stringHolder.="<ul><li>".genForm("sentient")."</li><li>".genQuirk("sentient")."</li></ul>";
 				} else {
 					$num = 1;
 					while ($num <= $planetBiosphere[1]) {
-						$stringHolder.="<ul><li>Sample Lifeform: ".genClassification($word)."<ul><li>Quirks: ".genQuirk($word);
-						$stringHolder.="</li></ul></li></ul>";
-						$num++;
+						$stringHolder.="<ul><li>Sample Lifeform: ".genClassification($word)."<ul><li>".genForm($word)."</li><li>Quirks: ".genQuirk($word);
+								$stringHolder.="</li></ul></li></ul>";
+								$num++;
 					}
 					$stringHolder.="</li></ul>";
 				}
@@ -315,11 +315,11 @@ if ($numPlanets > 0) {
 							$word = "complex";
 						}
 						if ($moonBiosphere[1] == 7) {
-							$stringHolder.="<ul><li>".genQuirk("sentient")."</li></ul>";
+							$stringHolder.="<ul><li>".genForm("sentient")."</li><li>".genQuirk("sentient")."</li></ul>";
 						} else {
 							$num = 1;
 							while ($num <= $moonBiosphere[1]) {
-								$stringHolder.="<ul><li>Sample Lifeform: ".genClassification($word)."<ul><li>Quirks: ".genQuirk($word);
+								$stringHolder.="<ul><li>Sample Lifeform: ".genClassification($word)."<ul><li>".genForm($word)."</li><li>Quirks: ".genQuirk($word);
 								$stringHolder.="</li></ul></li></ul>";
 								$num++;
 							}

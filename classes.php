@@ -1527,6 +1527,7 @@ function genPlanetPopulation($biosphereDensity, $biosphereComplexity, $atmospher
 	return $returnArray;
 }
 
+//generates the technology level of an inhabited planet based on the supplied parameters.  returns an array (techLevelCode, techLevelString)
 function genPlanetTechnology($population, $gravity, $atmosphereComposition, $atmosphereDensity, $volcanism, $climate, $biosphere) {
 	$modifier = 0;
 	$returnArray = array();
@@ -1584,6 +1585,7 @@ function genPlanetTechnology($population, $gravity, $atmosphereComposition, $atm
 	return $returnArray;
 }
 
+//generates the quirks (if any) of a species of the specified $type (basic, simple, complex, sentient).  setting $force to TRUE forces there to be at least one quirk.  returns as a string.
 function genQuirk($type, $force = FALSE) {
 	$returnText="";
 	if ($force == TRUE) {
@@ -1760,6 +1762,7 @@ function genQuirk($type, $force = FALSE) {
 	return $returnText;
 }
 
+//generates the classification of a species of specified $type (basic, simple, complex).  possibly classifications are lethal, dangerous, commonplace, interesting, useful, breakthrough, and social.  returns as a string.
 function genClassification ($type) {
 	$returnText = "";
 	switch ($type) {
@@ -1854,12 +1857,13 @@ a good find, but not terribly distinct or otherwise noteworthy.";
 	return $returnText;
 }
 
+//loads the specified file handler as a tab-separated value file and converts it/returns it as an array.  returns as an array.
 function loadTSV($file) {
-	//loads the specified file handler as a tab-separated value file and converts it/returns it as an array.
 	$rows = array_map('str_getcsv', $file, array_fill(0, count($file), "\t"));
 	return $rows;
 }
 
+//generate an alien artifact.  $template and $technology allow you to specify the artifact's template or technology.  returns as a string.
 function generateArtifact($template = FALSE, $technology = FALSE) {
 	//determine template
 	$returnArray = array();
@@ -2477,6 +2481,7 @@ function generateArtifact($template = FALSE, $technology = FALSE) {
 	return $returnString;
 }
 
+//increase $startingDice by $steps sizes using latest paizo rules.  returns as a string.
 function increaseDamageDice ($startingDice, $steps) {
 	$chart = array("1", "1d2", "1d3", "1d4", "1d6", "1d8", "1d10", "2d6", "2d8", "3d6", "3d8", "4d6", "4d8", "6d6", "6d8", "8d6", "8d8", "12d6", "12d8", "16d6");
 	if (in_array($startingDice, $chart)) {
@@ -2544,6 +2549,60 @@ function increaseDamageDice ($startingDice, $steps) {
 		if ($startingDice == "1d12") {
 			return increaseDamageDice("2d6", $steps);
 		}
+	}
+}
+
+//generates the form of the species of provided $type (basic, simple, complex, sentient)
+function genForm ($type) {
+	switch ($type) {
+		case "basic":
+			$forms = loadTSV(file('data/basicLifeForms.csv'));
+			$count = count($forms);
+			$roll = mt_rand(1,$count)-1;
+			return "<em>".$forms[$roll][0]." - </em>".$forms[$roll][1];
+			break;
+		case "simple":
+			$forms = loadTSV(file('data/simpleLifeForms.csv'));
+			$count = count($forms);
+			$roll = mt_rand(1,$count)-1;
+			return "<em>".$forms[$roll][0]." - </em>".$forms[$roll][1];
+			break;
+		case "complex":
+			$forms = loadTSV(file('data/complexLifeForms.csv'));
+			$count = count($forms);
+			$roll = mt_rand(1,$count)-1;
+			return "<em>".$forms[$roll][0]." - </em>".$forms[$roll][1];
+			break;
+		case "sentient":
+			$forms = loadTSV(file('data/sentientLifeForms.csv'));
+			$count = count($forms);
+			$roll = mt_rand(1,$count)-1;
+			//check for parasitical dominator
+			if ($forms[$roll][2] == "p") {
+				$returnString = "<em>Parasite or Symbiote plus Host: </em><ul><li><em>Parasite/Symbiote: </em>";
+				$loop = TRUE;
+				while ($loop == TRUE) {
+					$roll2 = mt_rand(1,$count)-1;
+					if ($forms[$roll2][2] != "h") {
+						$loop = FALSE;
+						$returnString .= "<em>".$forms[$roll2][0]." - </em>".$forms[$roll2][1];
+					}
+				}
+				$returnString .= "</li><li><em>Host: </em>";
+				$loop = TRUE;
+				while ($loop == TRUE) {
+					$roll3 = mt_rand(1,$count)-1;
+					if ($forms[$roll3][2] != "e") {
+						$loop = FALSE;
+						$returnString .= "<em>".$forms[$roll3][0]." - </em>".$forms[$roll3][1];
+					}
+				}
+				$returnString .= "</li></ul>";
+				return $returnString;
+			} else {
+				return "<em>".$forms[$roll][0]." - </em>".$forms[$roll][1];
+			}
+			break;
 	}
 }
 ?>
