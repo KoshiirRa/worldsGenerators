@@ -165,7 +165,7 @@ if ($numPlanets > 0) {
 					}
 					$stringHolder.="</li></ul>";
 				}
-				$stringHolder.="</li></ul></li></ul>";
+				$stringHolder.="</li></ul>";
 			}
 			$stringHolder.="</li>";
 		}
@@ -211,7 +211,7 @@ if ($numPlanets > 0) {
 			$numMoonlets = mt_rand(1,6)-3;
 		}
 		if ($numMoons > 0) {
-			$stringHolder.="<li>".$numMoons." Moons<ul>";
+			$stringHolder.="<li>".$numMoons." Moons<ul class=\"moons\">";
 			$currentMoon = 1;
 			while ($currentMoon <= $numMoons) {
 				if ($zone == "1") {
@@ -231,7 +231,7 @@ if ($numPlanets > 0) {
 						$moonType = 4;
 					}
 				}
-				$stringHolder.="<li>Moon ".$currentMoon."<ul>";
+				$stringHolder.="<li>Moon ".$currentMoon."<ul id=\"planet".$count."moon".$currentMoon."\">";
 				switch($moonType) {
 					case "2":
 						$stringHolder.="<li>Terrestrial Moon</li>";
@@ -325,7 +325,7 @@ if ($numPlanets > 0) {
 							}
 							$stringHolder.="</li></ul>";
 						}
-						$stringHolder.="</li></ul>";
+						$stringHolder.="</li>";
 					}
 					$stringHolder.="</li>";
 				}
