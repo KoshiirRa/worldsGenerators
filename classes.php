@@ -56,7 +56,7 @@ function numPlanets ($starType, $starSize, $numStars=1) {
 	//penalize for number of stars...
 	if ($numStars==2) {
 		$modifier-=2;
-	} elseif ($numStars==3) {
+	} elseif ($numStars>=3) {
 		$modifier-=6;
 	}
 	switch ($starSize) {
