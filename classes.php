@@ -1,4 +1,5 @@
 <?php
+ini_set('memory_limit', '256M'); 
 //Generate a star
 function genStar () {
 	$starNum = 0;
@@ -37,7 +38,7 @@ function genStar () {
 	$starNum = mt_rand(1,10)+mt_rand(1,10);
 	if ($starNum == 2) {
 		$starSize = "IV";
-		$starFluff = "(Subgiant)";
+		$starFluff = " (Subgiant)";
 	} elseif ($starNum >= 3 && $starNum <= 16) {
 		$starSize = "V";
 		$starFluff = " (Main Sequence)";
@@ -219,7 +220,11 @@ function genPlanetZones ($starType, $numPlanets) {
 
 function genPlanetType($zone) {
 	$roll = mt_rand(1,20);
+	//key: 0 = code, 1 = text, 2 = special code for terrestrial type (0 for non-terrestrial)
+	//$returnArray = array();
 	$type = 0;
+	$terrestrialCode = 0;
+	$text = "";
 	switch ($zone) {
 		//zone key: 1 = hot zone, 2 = habitable zone, 3 = cold zone
 		//planet key: 1 = gas giant, 2 = terrestrial, 3 = asteroid belt, 4 = icy
@@ -228,8 +233,12 @@ function genPlanetType($zone) {
 				$type = 1;
 			} elseif ($roll >= 3 && $roll <= 19) {
 				$type = 2;
+				$hold = genTerrestrial();
+				$text = $hold[1];
+				$terrestrialCode = $hold[2];
 			} else {
 				$type = 3;
+				$text = "irrelevant";
 			}
 			break;
 		case "2":
@@ -237,10 +246,16 @@ function genPlanetType($zone) {
 				$type = 1;
 			} elseif ($roll >= 5 && $roll <= 18) {
 				$type = 2;
+				$hold = genTerrestrial();
+				$text = $hold[1];
+				$terrestrialCode = $hold[2];
 			} elseif ($roll == 19) {
 				$type = 3;
+				$text = "irrelevant";
 			} else {
 				$type = 4;
+				$text = "This body may have at one point been a liquid body that migrated out into a cooler part of the system, or it may have always been frozen volatiles.  Regardless, it is now it is a barren ball of snow and ice that is deadly for all but the hardiest forms of life – if any at all. It is the image of what the cold space can do, but still might hold secrets worth exploring.<br>Environmentally protected investigators and shuttles are necessary to explore the surface, which is usually treacherous and jagged, or at the very least rugged. Depending on how long it took to freeze, or whether it recently suffered a thaw, the surface could be dangerously brittle – or many kilometres thick. The heat from fusion torch engines could start a chain reaction of steam geysers and cracking glacial plates, or simply open up a chasm that leads to the planet’s core surface, should it even have one.<br>Icy barren bodies are dangerous and difficult to explore, but the ice itself could contain interesting chemicals and minerals. Alternatively if the ice is oxygen-based, it could be used to aide in re-supplying survival
+supplies or perhaps atmospheric tanks. These bodies are a good find, if not all that unique or exciting.";
 			}
 			break;
 		case "3":
@@ -248,14 +263,21 @@ function genPlanetType($zone) {
 				$type = 1;
 			} elseif ($roll >= 9 && $roll <= 11) {
 				$type = 2;
+				$hold = genTerrestrial();
+				$text = $hold[1];
+				$terrestrialCode = $hold[2];
 			} elseif ($roll >= 11 && $roll <= 12) {
 				$type = 3;
+				$text = "irrelevant";
 			} else {
 				$type = 4;
+				$text = "This body may have at one point been a liquid body that migrated out into a cooler part of the system, or it may have always been frozen volatiles.  Regardless, it is now it is a barren ball of snow and ice that is deadly for all but the hardiest forms of life – if any at all. It is the image of what the cold space can do, but still might hold secrets worth exploring.<br>Environmentally protected investigators and shuttles are necessary to explore the surface, which is usually treacherous and jagged, or at the very least rugged. Depending on how long it took to freeze, or whether it recently suffered a thaw, the surface could be dangerously brittle – or many kilometres thick. The heat from fusion torch engines could start a chain reaction of steam geysers and cracking glacial plates, or simply open up a chasm that leads to the planet’s core surface, should it even have one.<br>Icy barren bodies are dangerous and difficult to explore, but the ice itself could contain interesting chemicals and minerals. Alternatively if the ice is oxygen-based, it could be used to aide in re-supplying survival
+supplies or perhaps atmospheric tanks. These bodies are a good find, if not all that unique or exciting.";
 			}
 			break;
 	}
-	return $type;
+	$returnArray = array($type, $text, $terrestrialCode);
+	return $returnArray;
 }
 
 function genRoids($modifier) {
@@ -349,6 +371,7 @@ function genRoids($modifier) {
 }
 
 function genPlanetSize($zone, $type, $moon = FALSE, $planetSize = 1) {
+	//var_dump($type);
 	$modifier = 0;
 	$returnArray = array(); //[0] is size code, [1] is the size string
 	//$zone key: 1 = hot zone, 2 = habitable zone, 3 = cold zone
@@ -362,6 +385,7 @@ function genPlanetSize($zone, $type, $moon = FALSE, $planetSize = 1) {
 			$modifier+=1;
 	}
 	//$type key: 1 = gas giant, 2 = terrestrial, 3 = asteroid belt (shouldnt happen), 4 = icy
+	//echo "TYPE: ".$type;
 	switch ($type) {
 		case "1":
 			$modifier+=20;
@@ -376,11 +400,11 @@ function genPlanetSize($zone, $type, $moon = FALSE, $planetSize = 1) {
 		$modifier-=5;
 	}
 	$roll = mt_rand(1,20)+$modifier;
+	//echo "FOOBAR: ".$modifier;
 	if ($roll <= -4) {
 		$returnArray[0] = 1;
 	} elseif ($roll >= -3 && $roll <= 0) {
 		$returnArray[0] = 2;
-		
 	} elseif ($roll >= 1 && $roll <= 5) {
 		$returnArray[0] = 3;
 	} elseif ($roll >= 6 && $roll <= 10) {
@@ -620,7 +644,7 @@ function genAtmoDense($gravity, $zone, $moon = FALSE) {
 		$modifier-=4;
 	}
 	if ($moon == TRUE) {
-		$modifer-=2;
+		$modifier-=2;
 	}
 	$roll = mt_rand(1,20)+$modifier;
 	switch ($gravity) {
@@ -1285,7 +1309,7 @@ function genPlanetClimate($atmosphere, $starType, $starSize, $planetVolcanism, $
 	return $returnText;
 }
 
-function genPlanetBiosphere ($atmopshere, $hydrosphere, $zone, $atmosphericComposition, $volcanism) {
+function genPlanetBiosphere ($atmosphere, $hydrosphere, $zone, $atmosphericComposition, $volcanism) {
 	$modifier = 0;
 	$returnArray = array();
 	switch ($atmosphere) {
@@ -2604,5 +2628,194 @@ function genForm ($type) {
 			}
 			break;
 	}
+}
+
+//generates a debris formation of the specified class (field, cluster).  $type can be specified to create one of a specific type (sedentary stone, heat-formed stone, ore, metal, precious metal, rare substance, unknown mineral, unknown metal)
+function genDebris ($class, $type = FALSE) {
+	$returnString = "";
+	if ($type == FALSE) {
+		$roll = mt_rand(1,20);
+		if ($roll <= 8) {
+			$type = "sedentary stone";
+		} elseif ($roll >= 9 && $roll <= 12) {
+			$type = "heat-formed stone";
+		} elseif ($roll >= 13 && $roll <= 14) {
+			$type = "ore";
+		} elseif ($roll >= 15 && $roll <= 16) {
+			$type = "metal";
+		} elseif ($roll == 17) {
+			$type = "precious metal";
+		} elseif ($roll == 18) {
+			$type = "rare substance";
+		} elseif ($roll == 19) {
+			$type = "unknown mineral";
+		} elseif ($roll == 20) {
+			$type = "unknown metal";
+		}
+	}
+	if ($class == "field") {
+		$returnText = "This is an area of space that has collected a number of large, (usually) natural stellar debris. Either due to a gravitational attraction or lack of mass to break free of the chaotic whirl of the Void, the objects have created an asteroid field of sorts, with most of the objects bouncing off of one another dangerously within the area.<br><br>";
+	} else {
+		$returnText = "Similar to a debris field, a debris cluster cluster is a tightly packed collection of space debris. Through a mutual magnetic attraction or gravitational impulses, chunks of debris are held fast against one another into a single large mass. While this does make it drastically easier to avoid as a pilot, it stores a huge amount of potential energy against its many segments.  Eventually – hopefully when the explorer vessel is very far away – the gravitational or magnetic attraction will be reversed by the chaos of the Rim and the many chunks will be hurtled outward like some kind of asteroid-based bomb.<br><br>";
+	}
+	switch ($type) {
+		case "sedentary stone":
+			$amount = 100*(mt_rand(1,10)+mt_rand(1,10)+mt_rand(1,10)+mt_rand(1,10)+mt_rand(1,10));
+			$returnString = "<em>Sedentary Stone</em>, XYZ Tons - This is really just raw rock that is worth very little, and is extremely common in every corner of space.  It is worth about 10 credits per ton.  Examples include shale, sandstone, and other rocks not formed by heat.";
+			break;
+		case "heat-formed stone":
+			$amount = 100*(mt_rand(1,10)+mt_rand(1,10)+mt_rand(1,10));
+			$returnString = "<em>Heat-Formed Stone</em>, XYZ Tons - This material is a little more rare than normal stone, and is often glassy or smooth to the touch and very dense.  it chips when struck properly and can be very resistant to laser technology.  It is worth about 50 credits per ton.  Examples include obsidian, basalt, granite, and other rocks formed by heat.";
+			break;
+		case "ore":
+			$amount = 50*(mt_rand(1,10)+mt_rand(1,10)+mt_rand(1,10));
+			$returnString = "<em>Ore-Bearing Rock</em>, XYZ Tons - This is the rough-hewn rock that contains heavy portions of a metal used commonly by many powers.  It is heavy and takes up a great deal of cargo space, but sells for much more than other stone types.  It is worth about 100 credits per ton.  Examples include iron and copper ore.";
+			break;
+		case "metal":
+			$amount = 50*(mt_rand(1,10)+mt_rand(1,10));
+			$returnString = "<em>Raw Metal</em>, XYZ Tons - These are either naturally formed hunks of metal that have been battered and bashed out of their ore state, or simply chunks of something larger made of metal, such as spaceship debris. They can be collected and molten down into ingots rather easily, making them easy to transport for sale, though this can be a time-intensive process and almost all small exploration ships and most preliminary scouting vessels lack the capability to do so on a scale beyond that of collecting samples.  It is worth about 1,000 credits per ton.  Examples include raw iron, debris that is primarily hull plating, raw copper, and other metals that can be found in their natural state.";
+			break;
+		case "precious metal":
+			$amount = 10*mt_rand(1,6);
+			$preciousMetals = array("Gold","Silver","Platinum","Palladium","Ruthenium","Rhodium","Osmium","Iridium","Rhenium");
+			$randMetal = $preciousMetals[(mt_rand(1,count($preciousMetals)))-1];
+			$returnString = "<em>Precious Metal (".$randMetal.")</em>, XYZ Tons - These are not formed of the same kind of purity that merchants are used to seeing when dealing with precious metal, but instead are hunks of rock that contain large veins of precious metal within them. They can be broken down and smelted into bouillon with some effort, but are a find nonetheless.  As with raw metal, this is a time-intensive process and almost all small exploration ships and most preliminary scouting vessels lack the capability to do so on a scale beyond that of collecting samples.  However, the drastic increase in price over raw metal makes it worthwhile to do so with precious metals.  Precious metals are worth between 10,000 and 50,000 credits per ton depending on the metal and the buyer.";
+			break;
+		case "rare substance":
+			$amount = mt_rand(1,4)+mt_rand(1,4);
+			$rareSubstances = array("Precious Gemstones","Germanium","Exotic compounds used in the creation of Flux-Space Gateways","Rigarium precursors");
+			$randSubstance = $rareSubstances[(mt_rand(1,count($rareSubstances)))-1];
+			$returnString = "<em>Rare Substance(".$randSubstance.")</em>, XYZ Tons - This is a field that contains debris heavy in one of the galaxy’s more precious – and expensive – materials. This is a true find and a very good way to fund an entire exploration’s worth of expenses.  Regardless of if the vehicle has the ability to process this compound, most explorers will seek to extract it if only just for the pure profit.  Rare substances fetch between 100,000 and 1,000,000 credits per ton, depending on the substance and the buyer.";
+			break;
+		case "unknown mineral":
+			$amount = mt_rand(1,3);
+			$returnString = "<em>Unknown Mineral</em>, XYZ Tons - There are pieces of debris in this field that baffle sensor scans and chemical analysis. They contain a solid mineral or substance that does not match any existing record in the database, and are likely worth a fortune to the scientific community.  Or it could be completely useless.  Unknown minerals are worth between 1,000 and 10,000,000 credits per ton.";
+			break;
+		case "unknown metal":
+			$amount = mt_rand(1,2);
+			$returnString = "<em>Unknown Metal</em>, XYZ Tons - The field contains nearly pure samples of a previously unknown metal that can withstand the rigors of being exposed to the vacuum like this.  It could be a huge boon to the scientific and shipbuilding industries, and might make the exploration the key to a new age in either field.  Or it could be completely useless.  Unknown minerals are worth between 1,000 and 10,000,000 credits per ton.";
+			break;
+	}
+	if ($class == "cluster") {
+		$amount*=2;
+	} else {
+		$returnString.="<br>A DC ".(15+(mt_rand(1,6)+mt_rand(1,6)))." Pilot check is required to safely get your vehicle in position to extract the salvageable debris.  Failure on this check incurs 5d8x2 damage to the vehicle.";
+	}
+	$returnString = str_replace("XYZ", $amount, $returnString);
+	return $returnString;
+}
+
+//generates terrestrial planet type
+function genTerrestrial ($notComp = FALSE) {
+	//$returnArray key: 0 = code, 1 = fluff text
+	//code key: 1 = rocky barren, 2 = mineral rich, 3 = composite rock/soil, 4 = blasted glass, 5 = porous stone, 6 = metallic, 7 = environmentally evolved
+	$returnArray = array("", "", "");
+	$loop = TRUE;
+	while ($loop == TRUE) {
+		$rand = mt_rand(1,6)+mt_rand(1,6);
+		if ($rand != 2 && $rand != 12) {
+			if ($notComp == TRUE) {
+				if ($rand >= 6 && $rand <= 8) {
+					
+				} else {
+					$loop = FALSE;
+				}
+			} else {
+				$loop = FALSE;
+			}
+		}
+	}
+	if ($rand <= 4) {
+		$returnArray[0] = 1;
+		$returnArray[1] = "<em>Rocky Barren - </em>This type of body is a common discovery, as it is really just a body whose predominate material is dense, sedentary rock and stone. Like a galactic boulder it slowly revolves and moves through space, sometimes with some minor forms of life clinging to it unknowing of their home’s chaotic state.<br>Exploring a rocky barren is actually quite safe and simple. Core sampling, sonic scans, meteorological information and the like do not require special equipment, but some very dense bodies could be resistant to normal sampling tools. Laser drills and heavy-duty picks are suggested, but may wear out over extended missions.<br>Rocky barrens do not warrant much exploration or study, as they tend to be mostly homogenous throughout their outermost layers. A few samples here and there combined with powerful ship-based sensor scans will determine whether deeper digs or extensive searching is necessary. Plainly said, rocky barrens are good for the books – but not for profits.";
+	} elseif ($rand == 5) {
+		$returnArray[0] = 2;
+		$returnArray[1] = "<em>Mineral Rich - </em>Some bodies are good for scientific research – others are better for sheer monetary worth. This type of body is one of the latter. It is essentially a rocky barren that has deep and frequent deposits of a single type of mineral that makes up much of its crust. A sufficient excavation team and an empty cargo hold could make for a fortuitous find. In fact, there are some explorations that will set up temporary mining colonies and attempt to coordinate a mining operation just to be able to take as much of the mineral-laden rock.<br>With additional minerals in the ‘soil’ and groundwater (if any) there is a chance that life could exist on a mineral rich planetoid, but there is unlikely enough of an ecosphere to support complex organisms or the like; at least not on the surface. Tunnels and remnants of other miners’ exploits could make for pockets of life and evolution, but are quite rare in any circumstance.<ul><li>";
+		$rand2 = mt_rand(1,100);
+		if ($rand2 <= 40) {
+			$returnArray[1] .= "This body can produce 2d6 x 500 kg of salts and sulphurs per 40 man-hours of work without heavy equipment.  Heavy equipment doubles this amount.  These compounds are in their most crude form, and are likely to be carried with a great deal of unwanted material, but can be cleaned and refined to create the saleable format that the common galactic citizen is used to seeing.";
+		} elseif ($rand2 >= 41 && $rand2 <= 80) {
+			$returnArray[1] .= "This body can produce 2d4 x 500 kg of carbon or silicon per 40 man-hours of work without heavy equipment.  Heavy equipment doubles this amount.  These elements are in their most crude form, and are likely to be carried with a great deal of unwanted material, but can be cleaned and refined to create the saleable format that the common galactic citizen is used to seeing.";
+		} elseif ($rand2 >= 81 && $rand2 <= 85) {
+			$returnArray[1] .= "This body can produce 1d4 x 500 kg of raw gemstones of varying type and quality per 40 man-hours of work without heavy equipment.  Heavy equipment doubles this amount.  These gemstones are in their most crude form, and are likely to be carried with a great deal of unwanted material, but can be cleaned and refined to create the saleable format that the common galactic citizen is used to seeing.";
+		} elseif ($rand2 >= 86 && $rand2 <= 90) {
+			$returnArray[1] .= "This body can produce 2d6 x 50 kg of exotic materials needed for Flux Space Gateway production per 40 man-hours of work without heavy equipment.  Heavy equipment doubles this amount.  These materials are in their most crude form, and are likely to be carried with a great deal of unwanted material, but can be cleaned and refined to create the saleable format that the common galactic citizen is used to seeing.";
+		} elseif ($rand2 >= 91 && $rand2 <= 94) {
+			$returnArray[1] .= "This body can produce 1d3 x 500 kg of an unknown soft mineral per 40 man-hours of work without heavy equipment.  Heavy equipment doubles this amount.  These minerals are in their most crude form, and are likely to be carried with a great deal of unwanted material, but can be cleaned and refined for study.";
+		} elseif ($rand2 >= 95 && $rand2 <= 98) {
+			$returnArray[1] .= "This body can produce 2d6 x 50 kg of Rigarium precursors per 40 man-hours of work without heavy equipment.  Heavy equipment doubles this amount.  These precurosrs are in their most crude form, and are likely to be carried with a great deal of unwanted material, but can be cleaned and refined to create forms useful for the production of Rigarium.";
+		} elseif ($rand2 >= 99 && $rand2 <= 100) {
+			$returnArray[1] .= "This body can produce 1d6 x 50 kg of an unknown dense mineral per 40 man-hours of work without heavy equipment.  Heavy equipment doubles this amount.  These minerals are in their most crude form, and are likely to be carried with a great deal of unwanted material, but can be cleaned and refined for study.";
+		}
+		$returnArray[1] .= "</li></ul>";
+	} elseif ($rand >= 6 && $rand <= 8) {
+		$returnArray[0] = 3;
+		$returnArray[1] = "<em>Composite Rock/Soil - </em>The most common form of terrestrial body, the composite rock/soil result means that the planetoid is actually quite similar to an early Earth-like, terrestrial planet. It has a sizeable chance of carrying an average atmosphere, and can support some forms of life considerably well. It should be recorded as a significant find.<br>Composite bodies are nearly always in transition from one state to another. It takes millions of years (or a massive stellar event) to change a body's archetype, and these are a prime example of that slow change. Caught in the several-million-year-long growth process, composite planetoids have several regions of their surfaces that represent different aspects of other archetypes.  This particular composite planetoid is composed of the following archetypes: <ul>";
+		$numTypes = mt_rand(1,3)+mt_rand(1,3)+mt_rand(1,3);
+		$loop = 1; 
+		while ($loop < $numTypes) {
+			$loop2 = TRUE;
+			//echo $loop."<br>";
+			while ($loop2 == TRUE) {
+				$subtype = genTerrestrial(TRUE);
+				//print_r($subtype);
+				if ($subtype[0] != 3) {
+					$returnArray[1] .= "<li>".$subtype[1]."</li>";
+					$loop2 = FALSE;
+				}
+			}
+			$loop++;
+		}
+		$returnArray[1] .= "</ul>";
+	} elseif ($rand == 9) {
+		$returnArray[0] = 4;
+		$returnArray[1] = "<em>Blasted Glass - </em>Any silicon or similarly-based body that crosses paths (comes within a few million miles) with a wayward star or superheated comet will sometimes get bathed for a period of time in powerful radiation and intense heat. This can cause the planetoid to literally scorch burn and eventually melt into natural glass. This makes for a
+beautiful and extremely hazardous body to explore or investigate.<br>With the type of phenomenon that must take place to create a blasted glass body, there is almost no possibility of life existing on its surface, but in theory there could be some life forms that were able to adapt to the early generations of heat and radiation long enough to become subterranean and escape the crust-melting era.<br>There is very little of true worth other then data recording and small glass samples when dealing with this type of body, but some explorers still spend a great deal of time studying the process by which it was created. Even though this knowledge would surely do nothing to prevent this from happening should a galactic planet ever run into the same patterns – they still attain it just in case.";
+	} elseif ($rand == 10) {
+		$returnArray[0] = 5;
+		$returnArray[1] = "<em>Porous Stone - </em>Some bodies are far more trouble to explore than they could possibly be worth – and porous stone bodies are exactly that. The result of either extensive erosion, over mining, the freezing and subsequent boiling of groundwater or a dozen other scientific possibilities, the upper crusts of these bodies are built much like
+a sponge or piece of lace. They are rifled with holes, tunnels, tubes and flow-vents that could take years to fully explore.<br>Other than constant chances for cave-ins and heightened threats of volcanic activity, these planetoids are exactly the same as mineral rich bodies. The tunnels and recesses that make up the infrastructure of these planetoids halve any gains from mining, and always bear the constant threat of collapse.<ul><li>";
+		$rand2 = mt_rand(1,100);
+		if ($rand2 <= 40) {
+			$returnArray[1] .= "This body can produce 2d6 x 250 kg of salts and sulphurs per 40 man-hours of work without heavy equipment.  Heavy equipment doubles this amount.  These compounds are in their most crude form, and are likely to be carried with a great deal of unwanted material, but can be cleaned and refined to create the saleable format that the common galactic citizen is used to seeing.";
+		} elseif ($rand2 >= 41 && $rand2 <= 80) {
+			$returnArray[1] .= "This body can produce 2d4 x 250 kg of carbon or silicon per 40 man-hours of work without heavy equipment.  Heavy equipment doubles this amount.  These elements are in their most crude form, and are likely to be carried with a great deal of unwanted material, but can be cleaned and refined to create the saleable format that the common galactic citizen is used to seeing.";
+		} elseif ($rand2 >= 81 && $rand2 <= 85) {
+			$returnArray[1] .= "This body can produce 1d4 x 250 kg of raw gemstones of varying type and quality per 40 man-hours of work without heavy equipment.  Heavy equipment doubles this amount.  These gemstones are in their most crude form, and are likely to be carried with a great deal of unwanted material, but can be cleaned and refined to create the saleable format that the common galactic citizen is used to seeing.";
+		} elseif ($rand2 >= 86 && $rand2 <= 90) {
+			$returnArray[1] .= "This body can produce 2d6 x 25 kg of exotic materials needed for Flux Space Gateway production per 40 man-hours of work without heavy equipment.  Heavy equipment doubles this amount.  These materials are in their most crude form, and are likely to be carried with a great deal of unwanted material, but can be cleaned and refined to create the saleable format that the common galactic citizen is used to seeing.";
+		} elseif ($rand2 >= 91 && $rand2 <= 94) {
+			$returnArray[1] .= "This body can produce 1d3 x 250 kg of an unknown soft mineral per 40 man-hours of work without heavy equipment.  Heavy equipment doubles this amount.  These minerals are in their most crude form, and are likely to be carried with a great deal of unwanted material, but can be cleaned and refined for study.";
+		} elseif ($rand2 >= 95 && $rand2 <= 98) {
+			$returnArray[1] .= "This body can produce 2d6 x 25 kg of Rigarium precursors per 40 man-hours of work without heavy equipment.  Heavy equipment doubles this amount.  These precurosrs are in their most crude form, and are likely to be carried with a great deal of unwanted material, but can be cleaned and refined to create forms useful for the production of Rigarium.";
+		} elseif ($rand2 >= 99 && $rand2 <= 100) {
+			$returnArray[1] .= "This body can produce 1d6 x 25 kg of an unknown dense mineral per 40 man-hours of work without heavy equipment.  Heavy equipment doubles this amount.  These minerals are in their most crude form, and are likely to be carried with a great deal of unwanted material, but can be cleaned and refined for study.";
+		}
+		$returnArray[1] .= "</li></ul>";
+	} elseif ($rand == 11) {
+		$returnArray[0] = 6;
+		$returnArray[1] = "<em>Metallic - </em>A combination of blasted glass and mineral rich bodies, metallic bodies were once heavy in rocky ores that could be smelted into various raw metals but were caught in powerful stellar energies. These energies blasted or melted away the rock and stone of the ore, leaving behind huge patches of molten metal to eventually cool and become raw slag. A metallic body bears fields of smelted metal that might be several kilometres in diameter, making it an unbelievable find for profit-chasing industrial explorations.<br>With the proper equipment this raw metal can be cut from the body's surface and taken. Doing so requires several skilled technicians with the Mechanics or Profession (Miner) skills, but can result in a great deal of profit for the mission organisers and their industrialist investors.<ul><li>";
+		$rand2 = mt_rand(1,100);
+		if ($rand2 <= 40) {
+			$returnArray[1] .= "This body can produce 2d6 x 50 kg of copper or lead per 40 man-hours of work without heavy equipment.  Heavy equipment doubles this amount.";
+		} elseif ($rand2 >= 41 && $rand2 <= 80) {
+			$returnArray[1] .= "This body can produce 2d4 x 50 kg of aluminum or nickel per 40 man-hours of work without heavy equipment.  Heavy equipment doubles this amount.";
+		} elseif ($rand2 >= 81 && $rand2 <= 90) {
+			$returnArray[1] .= "This body can produce 1d4 x 50 kg of iron per 40 man-hours of work without heavy equipment.  Heavy equipment doubles this amount.";
+		} elseif ($rand2 >= 91 && $rand2 <= 94) {
+			$returnArray[1] .= "This body can produce 1d3 x 50 kg of an unknown soft metal per 40 man-hours of work without heavy equipment.  Heavy equipment doubles this amount.";
+		} elseif ($rand2 >= 95 && $rand2 <= 98) {
+			$returnArray[1] .= "This body can produce 2d6 x 5 kg of a precious metal per 40 man-hours of work without heavy equipment.  Heavy equipment doubles this amount.";
+		} elseif ($rand2 >= 99 && $rand2 <= 100) {
+			$returnArray[1] .= "This body can produce 1d6 x 5 kg of an unknown dense metal per 40 man-hours of work without heavy equipment.  Heavy equipment doubles this amount.";
+		}
+		$returnArray[1] .= "  These metals are found in their most raw smelted form, and are likely to be found in huge veins or puddle-shaped slabs that must be cut into smaller sections in order to be travelled with.  This raw metal can be later melted and refined into ingots for common sale, but not without a furnace and other important smelting equipment that most exploration missions do not make room for.";
+		$returnArray[1] .= "</li></ul>";
+	} elseif ($rand == 12) {
+		$returnArray[0] = 7;
+		$returnArray[1] = "<em></em>";
+	}
+	
+	return $returnArray;
 }
 ?>

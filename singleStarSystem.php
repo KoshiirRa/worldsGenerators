@@ -11,7 +11,13 @@
 //ini_set('display_errors', 'on');
 require_once('classes.php');
 echo "<br />";
-$starType = genStar();
+/*if (isset($_GET['starType'])) {
+	$starType[0] = $_GET['starType'];
+	$starType[1] = $_GET['starSize'];
+} else {*/
+	$starType = genStar();
+//}
+
 echo "<br />";
 //var_dump($starType); //0 = Star Type, 1 = Star Size
 $numPlanets = numPlanets($starType[0], $starType[1]);
@@ -48,13 +54,14 @@ if ($numPlanets > 0) {
 		//PLANET TYPE
 		//$type key: 1 = gas giant, 2 = terrestrial, 3 = asteroid belt, 4 = icy
 		$type = genPlanetType($zone);
-		switch($type) {
+		//echo "FOOBAR: ".$type[0];
+		switch($type[0]) {
 			case "1":
-				$stringHolder.="<li>Gas Giant</li>";
+				$stringHolder.="<li><em>Gas Giant</em> - ".$type[1]."</li>";
 				$gasGiants++;
 				break;
 			case "2":
-				$stringHolder.="<li>Terrestrial Planet</li>";
+				$stringHolder.="<li><em>Terrestrial Planet -</em> ".$type[1]."</li>";
 				break;
 			case "3":
 				$stringHolder = "Asteroid Belt ".(count($asteroidBelts)+1);
@@ -64,10 +71,10 @@ if ($numPlanets > 0) {
 				$asteroids = TRUE;
 				break;
 			case "4":
-				$stringHolder.="<li>Icy Planet</li>";
+				$stringHolder.="<li><em>Icy Planet - </em>".$type[1]."</li>";
 		}
 		//abort the rest of the iteration if an asteroid belt
-		if ($type == "3") {
+		if ($type[0] == "3") {
 			//$stringHolder.="</ul>";
 			array_push($planetArray, $stringHolder);
 			continue;
@@ -76,7 +83,7 @@ if ($numPlanets > 0) {
 		//PLANET SIZE
 		//$size[0] key: 1 = diminutive, 2 = fine, 3 = tiny, 4 = small, 5 = medium, 6 = large, 7 = huge, 8 = small gas giant, 9 = medium gas giant, 10 = huge gas giant, 11 = gargantuan gas giant, 12 = y-class brown dwarf
 		//$size[1] is the size text
-		$size = genPlanetSize($zone, $type);
+		$size = genPlanetSize($zone, $type[0]);
 		$stringHolder.="<li>".$size[1]."</li>";
 		
 		//PLANET GRAVITY
@@ -101,6 +108,8 @@ if ($numPlanets > 0) {
 		if ($atmosphere[0]!=1 && $size[0] <= 7) {
 			$atmosphereComposition = genAtmoComp($zone);
 			$stringHolder.="<li>".$atmosphereComposition[1]."</li>";
+		} else {
+			$atmosphereComposition = array(0,0);
 		}
 		
 		//PLANET GEOLOGY
@@ -232,12 +241,12 @@ if ($numPlanets > 0) {
 					}
 				}
 				$stringHolder.="<li>Moon ".$currentMoon."<ul id=\"planet".$count."moon".$currentMoon."\">";
-				switch($moonType) {
+				switch($moonType[0]) {
 					case "2":
-						$stringHolder.="<li>Terrestrial Moon</li>";
+						$stringHolder.="<li><em>Terrestrial Moon - </em>".$moonType[1]."</li>";
 						break;
 					case "4":
-						$stringHolder.="<li>Icy Moon</li>";
+						$stringHolder.="<li><em>Icy Moon - </em>".$moonType[1]."</li>";
 						break;
 				}
 				//MOON SIZE
@@ -266,6 +275,8 @@ if ($numPlanets > 0) {
 				if ($moonAtmosphere[0]!=1 && $moonSize[0] <= 7) {
 					$moonAtmosphereComposition = genAtmoComp($zone);
 					$stringHolder.="<li>".$moonAtmosphereComposition[1]."</li>";
+				} else {
+					$moonAtmosphereComposition = array(0,0);
 				}
 				//MOON GEOLOGY
 				//$planetGeology[0] key: 1 = very flat, 2 = flat, 3 = stndard, 4 = rugged, 5 = very rugged
