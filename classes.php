@@ -444,51 +444,51 @@ function genPlanetSize($zone, $type, $moon = FALSE, $planetSize = 1) {
 	if ($returnArray[0] == 1) {
 		$diameter = round(1.609344*(mt_rand(1,10)+mt_rand(1,10)+mt_rand(1,10)+mt_rand(1,10)+mt_rand(1,10)+50));
 		$diameter = number_format($diameter);
-		$returnArray[1] = "Diminutive (".$diameter." Kilometer diameter)";
+		$returnArray[1] = "Diminutive (".($diameter/2)." Kilometer radius)";
 	} elseif ($returnArray[0] == 2) {
 		$diameter = round(1.609344*(mt_rand(1,4)*100));
 		$diameter = number_format($diameter);
-		$returnArray[1] = "Fine (".$diameter." Kilometer diameter)";
+		$returnArray[1] = "Fine (".($diameter/2)." Kilometer radius)";
 	} elseif ($returnArray[0] == 3) {
 		$diameter = round(1.609344*((mt_rand(1,6)+mt_rand(1,6))*100));
 		$diameter = number_format($diameter);
-		$returnArray[1] = "Tiny (".$diameter." Kilometer diameter)";
+		$returnArray[1] = "Tiny (".($diameter/2)." Kilometer radius)";
 	} elseif ($returnArray[0] == 4) {
 		$diameter = round(1.609344*(1000*(mt_rand(1,2)+1)));
 		$diameter = number_format($diameter);
-		$returnArray[1] = "Small (".$diameter." Kilometer diameter)";
+		$returnArray[1] = "Small (".($diameter/2)." Kilometer radius)";
 	} elseif ($returnArray[0] == 5) {
 		$diameter = round(1.609344*1000*(mt_rand(1,4)+mt_rand(1,4)+4));
 		$diameter = number_format($diameter);
-		$returnArray[1] = "Medium (".$diameter." Kilometer diameter)";
+		$returnArray[1] = "Medium (".($diameter/2)." Kilometer radius)";
 	} elseif ($returnArray[0] == 6) {
 		$diameter = round(1.609344*1000*(mt_rand(1,4)+12));
 		$diameter = number_format($diameter);
-		$returnArray[1] = "Large (".$diameter." Kilometer diameter)";
+		$returnArray[1] = "Large (".($diameter/2)." Kilometer radius)";
 	} elseif ($returnArray[0] == 7) {
 		$diameter = round(1.609344*1000*(mt_rand(1,6)+16));
 		$diameter = number_format($diameter);
-		$returnArray[1] = "Huge (".$diameter." Kilometer diameter)";
+		$returnArray[1] = "Huge (".($diameter/2)." Kilometer radius)";
 	} elseif ($returnArray[0] == 8) {
 		$diameter = round(1.609344*1000*(mt_rand(1,6)+mt_rand(1,6)+20));
 		$diameter = number_format($diameter);
-		$returnArray[1] = "Small Gas Giant (".$diameter." Kilometer diameter)";
+		$returnArray[1] = "Small Gas Giant (".($diameter/2)." Kilometer radius)";
 	} elseif ($returnArray[0] == 9) {
 		$diameter = round(1.609344*1000*(mt_rand(1,8)+mt_rand(1,8)+mt_rand(1,8)+30));
 		$diameter = number_format($diameter);
-		$returnArray[1] = "Medium Gas Giant (".$diameter." Kilometer diameter)";
+		$returnArray[1] = "Medium Gas Giant (".($diameter/2)." Kilometer radius)";
 	} elseif ($returnArray[0] == 10) {
 		$diameter = round(1.609344*1000*(mt_rand(1,10)+mt_rand(1,10)+mt_rand(1,10)+mt_rand(1,10)+mt_rand(1,10)+50));
 		$diameter = number_format($diameter);
-		$returnArray[1] = "Huge Gas Giant (".$diameter." Kilometer diameter)";
+		$returnArray[1] = "Huge Gas Giant (".($diameter/2)." Kilometer radius)";
 	} elseif ($returnArray[0] == 11) {
 		$diameter = round(1.609344*1000*(mt_rand(1,6)+mt_rand(1,6)+mt_rand(1,6)+mt_rand(1,6)+mt_rand(1,6)+mt_rand(1,6)+60));
 		$diameter = number_format($diameter);
-		$returnArray[1] = "Gargantuan Gas Giant (".$diameter." Kilometer diameter)";
+		$returnArray[1] = "Gargantuan Gas Giant (".($diameter/2)." Kilometer radius)";
 	} elseif ($returnArray[0] == 12) {
 		$diameter = round(1.609344*1000*(mt_rand(1,6)+mt_rand(1,6)+mt_rand(1,6)+mt_rand(1,6)+mt_rand(1,6)+mt_rand(1,6)+60));
 		$diameter = number_format($diameter);
-		$returnArray[1] = "Gargantuan Y-Class Brown Dwarf (".$diameter." Kilometer diameter)";
+		$returnArray[1] = "Gargantuan Y-Class Brown Dwarf (".($diameter/2)." Kilometer radius)";
 	}
 	return $returnArray;
 }
